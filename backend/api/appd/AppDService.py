@@ -867,6 +867,12 @@ class AppDService:
         response = await self.controller.getVirtualPagesConfig(applicationId)
         return await self.getResultFromResponse(response, debugString)
 
+    async def getSettingsConfig(self, applicationId: int) -> Result:
+        debugString = f"Gathering Settings Config for Application {applicationId}"
+        logging.debug(f"{self.host} - {debugString}")
+        response = await self.controller.getSettingsConfig(applicationId)
+        return await self.getResultFromResponse(response, debugString)
+
     async def getBrowserSnapshotsWithServerSnapshots(self, applicationId: int) -> Result:
         debugString = f"Gathering Browser Snapshots for Application {applicationId}"
         logging.debug(f"{self.host} - {debugString}")

@@ -304,6 +304,11 @@ class AppdController(Consumer):
     @get("/controller/restui/browserRUMConfig/getVirtualPagesConfig/{applicationId}")
     def getVirtualPagesConfig(self, applicationId: Path):
         """Retrieves virtual pages config"""
+    
+    @params({"output": "json"})
+    @get("/controller/restui/browserRUMConfig/getSettingsConfig/{applicationId}")
+    def getSettingsConfig(self, applicationId: Path):
+        """Retrieves Settings config; Looking for the Session Timeout Setting"""
 
     @params({"output": "json"})
     @post("/controller/restui/browserSnapshotList/getSnapshots")
