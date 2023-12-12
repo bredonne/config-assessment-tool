@@ -22,11 +22,13 @@ class OverallAssessmentAPM(JobStepBase):
             "AppAgentsAPM",
             "MachineAgentsAPM",
             "BusinessTransactionsAPM",
+            "BusinessTransactionsAPM_WF",
             "BackendsAPM",
             "OverheadAPM",
             "ServiceEndpointsAPM",
             "ErrorConfigurationAPM",
             "HealthRulesAndAlertingAPM",
+            "HealthRulesAndAlertingAPM_WF",
             "DataCollectorsAPM",
             "DashboardsAPM",
         ]

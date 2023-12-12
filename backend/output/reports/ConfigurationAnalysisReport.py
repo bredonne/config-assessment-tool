@@ -26,6 +26,7 @@ class ConfigurationAnalysisReport(PostProcessReport):
         directory = f"output/{jobFileName}"
         file_prefix = f"{jobFileName}"
         # input
+
         self.analysis_sheet = os.path.join(directory, f"{file_prefix}-MaturityAssessment-apm.xlsx")
 
         if not os.path.exists(self.analysis_sheet):
@@ -137,6 +138,47 @@ class ConfigurationAnalysisReport(PostProcessReport):
             else:
                 taskList[2].append('Only ' + str(int(appFrame['numberCustomMatchRules'])) + ' Custom Match Rules')
 
+    def businessTranStatus_WF(self, application, taskList):
+        frame = pd.read_excel(self.analysis_sheet, sheet_name='BusinessTransactionsAPM_WF', engine='openpyxl')
+        frame.drop('controller', axis=1)
+        appFrame = frame.loc[frame['application'] == application]
+
+        # Number of Business Transcations
+        if (appFrame['numberOfBTs'] > 200).any():
+            taskList[1].append("Reduce amount of Business transactions from " + str(int(appFrame['numberOfBTs'])))
+
+        # % of Business Transactions with load
+        if (appFrame['percentBTsWithLoad'] < 90).any():
+            taskList[1].append(str(100 - int(appFrame['percentBTsWithLoad'])) + '% of Business Transactions have no load over the last 24 hours')
+
+        # Business Transaction Lockdown
+        if (appFrame['btLockdownEnabled'] == False).any():
+            taskList[1].append("Business Transaction Lockdown is disabled")
+
+        # Number of Custom Match Rules
+        if (appFrame['numberCustomMatchRules'] < 3).any():
+            if (appFrame['numberCustomMatchRules'] == 0).any():
+                taskList[2].append('No Custom Match Rules')
+            else:
+                taskList[2].append('Only ' + str(int(appFrame['numberCustomMatchRules'])) + ' Custom Match Rules')
+
+        # Number of Custom Match Rules WFMODIFIED
+        if (appFrame['numberOfCustomMatchURLRules'] < 3).any():
+            if (appFrame['numberOfCustomMatchURLRules'] == 0).any():
+                taskList[2].append('No Custom Match URL Rules')
+            else:
+                taskList[2].append('Only ' + str(int(appFrame['numberOfCustomMatchURLRules'])) + ' Custom Match URL Rules')
+        if (appFrame['numberOfCustomMatchMethodRules'] < 3).any():
+            if (appFrame['numberOfCustomMatchMethodRules'] == 0).any():
+                taskList[2].append('No Custom Match Method Rules')
+            else:
+                taskList[2].append('Only ' + str(int(appFrame['numberOfCustomMatchMethodRules'])) + ' Custom Match METHOD Rules')
+        if (appFrame['numberOfCustomMatchHTTPParameterRules'] < 3).any():
+            if (appFrame['numberOfCustomMatchHTTPParameterRules'] == 0).any():
+                taskList[2].append('No Custom Match HTTPRules Rules')
+            else:
+                taskList[2].append('Only ' + str(int(appFrame['numberOfCustomMatchHTTPParameterRules'])) + ' Custom Match HTTPPARMN Rules')
+
     def backendStatus(self, application, taskList):
         frame = pd.read_excel(self.analysis_sheet, sheet_name='BackendsAPM', engine='openpyxl')
         frame.drop('controller', axis=1)
@@ -232,6 +274,33 @@ class ConfigurationAnalysisReport(PostProcessReport):
             else:
                 taskList[3].append('Only ' + str(int(appFrame['numberOfCustomHealthRules'])) + ' Custom Health Rules')
 
+    def healthRulesAlertingStatus_WF(self, application, taskList):
+        frame = pd.read_excel(self.analysis_sheet, sheet_name='HealthRulesAndAlertingAPM_WF', engine='openpyxl')
+        frame.drop('controller', axis=1)
+        appFrame = frame.loc[frame['application'] == application]
+
+        # Number of Health Rule Violations in last 24 hours
+        if (appFrame['numberOfHealthRuleViolations'] > 10).any():
+            taskList[3].append(str(int(appFrame['numberOfHealthRuleViolations'])) + ' Health Rule Violations in 24 hours')
+
+        # Number of modifications to default Health Rules
+        if (appFrame['numberOfDefaultHealthRulesModified'] < 2).any():
+            if (appFrame['numberOfDefaultHealthRulesModified'] < 2).any():
+                taskList[3].append('No modifications to the default Health Rules')
+            else:
+                taskList[3].append('Only ' + str(int(appFrame['numberOfDefaultHealthRulesModified'])) + ' modifications to the default Health Rules')
+
+        # Number of actions bound to enabled policies
+        if (appFrame['numberOfActionsBoundToEnabledPolicies'] < 1).any():
+            taskList[3].append('No actions bound to enabled policies')
+
+        # Number of Custom Health Rules
+        if (appFrame['numberOfCustomHealthRules'] < 5).any():
+            if (appFrame['numberOfCustomHealthRules'] == 0).any():
+                taskList[3].append('No Custom Health Rules')
+            else:
+                taskList[3].append('Only ' + str(int(appFrame['numberOfCustomHealthRules'])) + ' Custom Health Rules')
+
     def dataCollectorStatus(self, application, taskList):
         frame = pd.read_excel(self.analysis_sheet, sheet_name='DataCollectorsAPM', engine='openpyxl')
         frame.drop('controller', axis=1)
@@ -289,11 +358,13 @@ class ConfigurationAnalysisReport(PostProcessReport):
         self.appAgentStatus(application, taskList)
         self.machineAgentStatus(application, taskList)
         self.businessTranStatus(application, taskList)
+        self.businessTranStatus_WF(application, taskList)
         self.backendStatus(application, taskList)
         self.overheadStatus(application, taskList)
         self.serviceEndpointStatus(application, taskList)
         self.errorConfigurationStatus(application, taskList)
         self.healthRulesAlertingStatus(application, taskList)
+        self.healthRulesAlertingStatus_WF(application, taskList)
         self.dataCollectorStatus(application, taskList)
         self.apmDashBoardsStatus(application, taskList)
 

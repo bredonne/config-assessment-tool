@@ -17,10 +17,12 @@ from extractionSteps.general.Synthetics import Synthetics
 from extractionSteps.maturityAssessment.apm.AppAgentsAPM import AppAgentsAPM
 from extractionSteps.maturityAssessment.apm.BackendsAPM import BackendsAPM
 from extractionSteps.maturityAssessment.apm.BusinessTransactionsAPM import BusinessTransactionsAPM
+from extractionSteps.maturityAssessment.apm.BusinessTransactionsAPM_WF import BusinessTransactionsAPM_WF
 from extractionSteps.maturityAssessment.apm.DashboardsAPM import DashboardsAPM
 from extractionSteps.maturityAssessment.apm.DataCollectorsAPM import DataCollectorsAPM
 from extractionSteps.maturityAssessment.apm.ErrorConfigurationAPM import ErrorConfigurationAPM
 from extractionSteps.maturityAssessment.apm.HealthRulesAndAlertingAPM import HealthRulesAndAlertingAPM
+from extractionSteps.maturityAssessment.apm.HealthRulesAndAlertingAPM_WF import HealthRulesAndAlertingAPM_WF
 from extractionSteps.maturityAssessment.apm.MachineAgentsAPM import MachineAgentsAPM
 from extractionSteps.maturityAssessment.apm.OverallAssessmentAPM import OverallAssessmentAPM
 from extractionSteps.maturityAssessment.apm.OverheadAPM import OverheadAPM
@@ -169,11 +171,13 @@ class Engine:
             AppAgentsAPM(),
             MachineAgentsAPM(),
             BusinessTransactionsAPM(),
+            BusinessTransactionsAPM_WF(),
             BackendsAPM(),
             OverheadAPM(),
             ServiceEndpointsAPM(),
             ErrorConfigurationAPM(),
             HealthRulesAndAlertingAPM(),
+            HealthRulesAndAlertingAPM_WF(),
             DataCollectorsAPM(),
             DashboardsAPM(),
             OverallAssessmentAPM(),
