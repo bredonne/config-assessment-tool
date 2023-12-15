@@ -181,6 +181,12 @@ class AppdController(Consumer):
         """Retrieves Policies"""
 
     @params({"output": "json"})
+    @get("/controller/alerting/rest/v1/applications/{applicationID}/policies/{policyID}")
+    def getPolicy(self, applicationID: Path, policyID: Path):
+        """Retrieves Specific Policy"""
+
+
+    @params({"output": "json"})
     @get("/controller/restui/MidcUiService/getAllDataGathererConfigs/{applicationID}")
     def getDataCollectors(self, applicationID: Path):
         """Retrieves Data Collectors"""

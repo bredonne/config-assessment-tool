@@ -86,7 +86,8 @@ class HealthRulesAndAlertingMRUM(JobStepBase):
 
                 # numberOfActionsBoundToEnabledPolicies
                 actionsInEnabledPolicies = set()
-                for policy in application["policies"]:
+                #for policy in application["policies"]:
+                for policy in application["policies"].items():
                     if policy["enabled"]:
                         if "actions" in policy:
                             for action in policy["actions"]:

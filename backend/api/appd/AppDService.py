@@ -412,7 +412,20 @@ class AppDService:
         debugString = f"Gathering Policies for Application:{applicationID}"
         logging.debug(f"{self.host} - {debugString}")
         response = await self.controller.getPolicies(applicationID)
-        return await self.getResultFromResponse(response, debugString)
+        policies = await self.getResultFromResponse(response, debugString)
+
+        policyDetails = []
+        for policy in policies.data:
+            policyDetails.append(self.controller.getPolicy(applicationID, policy["id"]))
+
+        responses = await AsyncioUtils.gatherWithConcurrency(*policyDetails)
+
+        policyData = []
+        for response, policy in zip(responses, policies.data):
+            debugString = f"Gathering Policy Data for Application:{applicationID} HPolicy:'{policy['name']}'"
+            policyData.append(await self.getResultFromResponse(response, debugString))
+
+        return Result(policyData, None)
 
     async def getSnapshotsWithDataCollector(
         self,
