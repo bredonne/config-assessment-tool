@@ -103,7 +103,7 @@ class HealthRulesAndAlertingAPM_WF(JobStepBase):
                     if healthruleinfo["affects"]["affectedEntityType"] in ["SERVICE_ENDPOINTS"]:
                         SEHealthRules += 1
                         # Check if HR is specified in a policy.
-                        for policy in application["policies"].items():
+                        for idx, policy in application["policies"].items():
                             if policy["enabled"]:
                                 if "healthRules" in policy["events"]["healthRuleEvents"]["healthRuleScope"]:
                                     if healthrule in policy["events"]["healthRuleEvents"]["healthRuleScope"]["healthRules"]:
@@ -116,7 +116,7 @@ class HealthRulesAndAlertingAPM_WF(JobStepBase):
                     if healthruleinfo["affects"]["affectedEntityType"] in ["JMX_AFFECTED_EMC"]:
                         JMXHealthRules += 1
                         # Check if HR is specified in a policy.
-                        for policy in application["policies"].items():
+                        for idx, policy in application["policies"].items():
                             if policy["enabled"]:
                                 if "healthRules" in policy["events"]["healthRuleEvents"]["healthRuleScope"]:
                                     if healthrule in policy["events"]["healthRuleEvents"]["healthRuleScope"]["healthRules"]:
@@ -124,7 +124,7 @@ class HealthRulesAndAlertingAPM_WF(JobStepBase):
                     if healthruleinfo["affects"]["affectedEntityType"] in ["BACKENDS"]:
                         BackendHealthRules += 1
                         # Check if HR is specified in a policy.
-                        for policy in application["policies"].items():
+                        for idx, policy in application["policies"].items():
                             if policy["enabled"]:
                                 if "healthRules" in policy["events"]["healthRuleEvents"]["healthRuleScope"]:
                                     if healthrule in policy["events"]["healthRuleEvents"]["healthRuleScope"]["healthRules"]:
@@ -139,7 +139,7 @@ class HealthRulesAndAlertingAPM_WF(JobStepBase):
 
                 #Number of active policies going to BigPanda
                 BigPanda_actionsInEnabledPolicies = set()
-                for policy in application["policies"].items():
+                for idx, policy in application["policies"].items():
                     if policy["enabled"]:
                         if "actions" in policy:
                             for action in policy["actions"]:
