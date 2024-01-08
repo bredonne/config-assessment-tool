@@ -90,7 +90,9 @@ class HealthRulesAndAlertingAPM_WF(JobStepBase):
                 analysisDataEvaluatedMetrics["numberOfHealthRuleViolations"] = policyEventCounts["warning"] + policyEventCounts["critical"]
 
 
-                # number of ServiceEndpoint based HealthRules.
+                NumberOfActivePolicies = 0
+                NumberOfActivePoliciesWithAllHealthRuleScope = 0
+                PoliciesWithBigPandaAction = 0
                 SEHealthRules = 0
                 SEHealthRulesWithPolicy = 0
                 SEHealthRulesWithPolicyPandaAction = 0
@@ -99,40 +101,53 @@ class HealthRulesAndAlertingAPM_WF(JobStepBase):
                 BackendHealthRules = 0
                 BackendHealthRulesWithPolicy = 0
                 BackendHealthRulesWithPolicyPandaAction = 0
+
                 for healthrule, healthruleinfo in application["healthRules"].items():
                     if healthruleinfo["affects"]["affectedEntityType"] in ["SERVICE_ENDPOINTS"]:
                         SEHealthRules += 1
                         # Check if HR is specified in a policy.
                         for idx, policy in application["policies"].items():
-                            if policy["enabled"]:
-                                if "healthRules" in policy["events"]["healthRuleEvents"]["healthRuleScope"]:
-                                    if healthrule in policy["events"]["healthRuleEvents"]["healthRuleScope"]["healthRules"]:
-                                        SEHealthRulesWithPolicy += 1
-                                        if "actions" in policy:  #Check for Panda Action
-                                            for action in policy["actions"]:
-                                                if "BigPanda" in str(action["actionName"]):
-                                                    SEHealthRulesWithPolicyPandaAction += 1
+                            try:
+                                if policy["enabled"] and policy["events"]["healthRuleEvents"] is not None and "healthRules" in policy["events"]["healthRuleEvents"]["healthRuleScope"]:  # Better type checking for when a policy does not act on HR's but other checkboxes
+                                    if policy["events"]["healthRuleEvents"]["healthRuleScope"]["healthRules"] is not None:
+                                        if healthrule in policy["events"]["healthRuleEvents"]["healthRuleScope"]["healthRules"]:
+                                            SEHealthRulesWithPolicy += 1
+                                            if "actions" in policy:  #Check for Panda Action
+                                                for action in policy["actions"]:
+                                                    if "BigPanda" in str(action["actionName"]):
+                                                        SEHealthRulesWithPolicyPandaAction += 1
+                            except (KeyError, TypeError, IndexError):
+                                print("Couldn't find a match for the key:")
 
                     if healthruleinfo["affects"]["affectedEntityType"] in ["JMX_AFFECTED_EMC"]:
                         JMXHealthRules += 1
                         # Check if HR is specified in a policy.
                         for idx, policy in application["policies"].items():
-                            if policy["enabled"]:
-                                if "healthRules" in policy["events"]["healthRuleEvents"]["healthRuleScope"]:
-                                    if healthrule in policy["events"]["healthRuleEvents"]["healthRuleScope"]["healthRules"]:
-                                        JMXHealthRulesWithPolicy += 1
+                            try:
+                                if policy["enabled"] and policy["events"]["healthRuleEvents"] is not None and "healthRules" in policy["events"]["healthRuleEvents"]["healthRuleScope"]:  # Better type checking for when a policy does not act on HR's but other checkboxes
+                                # if policy["enabled"] and "healthRules" in policy["events"]["healthRuleEvents"]["healthRuleScope"]:
+                                    if policy["events"]["healthRuleEvents"]["healthRuleScope"]["healthRules"] is not None:
+                                        if healthrule in policy["events"]["healthRuleEvents"]["healthRuleScope"]["healthRules"]:
+                                            JMXHealthRulesWithPolicy += 1
+                            except (KeyError, TypeError, IndexError):
+                                print("Couldn't find a match for the key:")
+
                     if healthruleinfo["affects"]["affectedEntityType"] in ["BACKENDS"]:
                         BackendHealthRules += 1
                         # Check if HR is specified in a policy.
                         for idx, policy in application["policies"].items():
-                            if policy["enabled"]:
-                                if "healthRules" in policy["events"]["healthRuleEvents"]["healthRuleScope"]:
-                                    if healthrule in policy["events"]["healthRuleEvents"]["healthRuleScope"]["healthRules"]:
-                                        BackendHealthRulesWithPolicy += 1
-                                        if "actions" in policy:  #Check for Panda Action
-                                            for action in policy["actions"]:
-                                                if "BigPanda" in str(action["actionName"]):
-                                                    BackendHealthRulesWithPolicyPandaAction += 1
+                            try:
+                                if policy["enabled"] and policy["events"]["healthRuleEvents"] is not None and "healthRules" in policy["events"]["healthRuleEvents"]["healthRuleScope"]:  #Better type checking for when a policy does not act on HR's but other checkboxes
+                                #if policy["enabled"] and "healthRules" in policy["events"]["healthRuleEvents"]["healthRuleScope"]:
+                                    if policy["events"]["healthRuleEvents"]["healthRuleScope"]["healthRules"] is not None:
+                                        if healthrule in policy["events"]["healthRuleEvents"]["healthRuleScope"]["healthRules"]:
+                                            BackendHealthRulesWithPolicy += 1
+                                            if "actions" in policy:  #Check for Panda Action
+                                                for action in policy["actions"]:
+                                                    if "BigPanda" in str(action["actionName"]):
+                                                        BackendHealthRulesWithPolicyPandaAction += 1
+                            except (KeyError, TypeError, IndexError):
+                                print("Couldn't find a match for the key:")
 
                 analysisDataEvaluatedMetrics["numberOfSEHealthRules"] = SEHealthRules
                 analysisDataEvaluatedMetrics["numberOfSEHealthRulesInPolicies"] = SEHealthRulesWithPolicy
@@ -141,35 +156,42 @@ class HealthRulesAndAlertingAPM_WF(JobStepBase):
                 BigPanda_actionsInEnabledPolicies = set()
                 for idx, policy in application["policies"].items():
                     if policy["enabled"]:
+                        NumberOfActivePolicies += 1
+                        if policy["events"]["healthRuleEvents"] is not None and "All_HEALTH_RULES" in policy["events"]["healthRuleEvents"]["healthRuleScope"]:
+                            NumberOfActivePoliciesWithAllHealthRuleScope += 1
                         if "actions" in policy:
                             for action in policy["actions"]:
                                 if "BigPanda" in str(action["actionName"]):
+                                    PoliciesWithBigPandaAction += 1
                                     BigPanda_actionsInEnabledPolicies.add(action["actionName"])
                         else:
                             logging.warning(f"Policy {policy['name']} is enabled but has no actions bound to it.")
 
 
-                analysisDataEvaluatedMetrics["numberOfBigPandaActionsBoundToEnabledPolicies"] = len(BigPanda_actionsInEnabledPolicies)
-
+                #analysisDataEvaluatedMetrics["numberOfBigPandaActionsBoundToEnabledPolicies"] = len(BigPanda_actionsInEnabledPolicies)
+                analysisDataEvaluatedMetrics["numberOfBigPandaActionsBoundToEnabledPolicies"] = PoliciesWithBigPandaAction
 
                 # numberOfCustomHealthRules
                 analysisDataEvaluatedMetrics["numberOfCustomHealthRules"] = len(
                     set(application["healthRules"].keys()).symmetric_difference(defaultHealthRules.keys())
                 )
 
-
                 analysisDataRawMetrics["totalWarningPolicyViolations"] = policyEventCounts["warning"]
                 analysisDataRawMetrics["totalCriticalPolicyViolations"] = policyEventCounts["critical"]
                 analysisDataRawMetrics["numberOfHealthRules"] = len(application["healthRules"])
+                analysisDataRawMetrics["numberOfCustomHealthRules"] = len(set(application["healthRules"].keys()).symmetric_difference(defaultHealthRules.keys()))
                 analysisDataRawMetrics["numberOfSEHealthRules"] = SEHealthRules
                 analysisDataRawMetrics["numberOfSEHealthRulesInPolicies"] = SEHealthRulesWithPolicy
-                analysisDataRawMetrics["numberOfSEHealthRulesInPoliciesPandaAction"] = SEHealthRulesWithPolicyPandaAction
-                analysisDataRawMetrics["numberOfBackendHealthRulesInPoliciesPandaAction"] =BackendHealthRulesWithPolicyPandaAction
-                analysisDataRawMetrics["numberOfJMXHealthRules"] = JMXHealthRules
-                analysisDataRawMetrics["numberOfJMXHealthRulesInPolicies"] = JMXHealthRulesWithPolicy
+                analysisDataRawMetrics["numberOfSEHealthRulesInPoliciesWithPandaAction"] = SEHealthRulesWithPolicyPandaAction
                 analysisDataRawMetrics["numberOfBackendHealthRules"] = BackendHealthRules
                 analysisDataRawMetrics["numberOfBackendHealthRulesInPolicies"] = BackendHealthRulesWithPolicy
+                analysisDataRawMetrics["numberOfBackendHealthRulesInPoliciesWithPandaAction"] =BackendHealthRulesWithPolicyPandaAction
+#                analysisDataRawMetrics["numberOfJMXHealthRules"] = JMXHealthRules
+#                analysisDataRawMetrics["numberOfJMXHealthRulesInPolicies"] = JMXHealthRulesWithPolicy
                 analysisDataRawMetrics["numberOfPolicies"] = len(application["policies"])
-                analysisDataRawMetrics["numberOfBigPandaActions"] = len(BigPanda_actionsInEnabledPolicies)
+                analysisDataRawMetrics["numberOfActivePolicies"] = NumberOfActivePolicies
+                analysisDataRawMetrics["numberOfActivePoliciesWithAllHealthRuleScope"]= NumberOfActivePoliciesWithAllHealthRuleScope
+                analysisDataRawMetrics["numberOfActiveBigPandaPolicies"] = PoliciesWithBigPandaAction
+
 
                 self.applyThresholds(analysisDataEvaluatedMetrics, analysisDataRoot, jobStepThresholds)

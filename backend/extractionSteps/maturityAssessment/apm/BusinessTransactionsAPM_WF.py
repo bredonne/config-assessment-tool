@@ -151,15 +151,16 @@ class BusinessTransactionsAPM_WF(JobStepBase):
                 if "ruleScopeSummaryMappings" in application["btMatchRules"]:
                     for rule in application["btMatchRules"]["ruleScopeSummaryMappings"]:
                         if rule["rule"]["summary"]["name"] not in defaultBtNameList and rule["rule"]["enabled"]:
-
-                            if rule["rule"]["txMatchRule"]["txCustomRule"]["txEntryPointType"] in txEntryPointType:
-                                numberOfCustomMatchMethodRules += 1
-
-                            if rule["rule"]["txMatchRule"]["txCustomRule"]["txEntryPointType"] in ["SERVLET"]:
-                                for idx, matchCondition in enumerate(rule["rule"]["txMatchRule"]["txCustomRule"]["matchConditions"]):
-                                    if matchCondition["type"] in ["HTTP"] and (len(matchCondition["httpMatch"]) > 0):
-                                        numberOfCustomMatchURLRules += 1
-                                        numberOfCustomMatchHTTPParameterRules += 1
+                            if "txCustomRule" in rule["rule"]["txMatchRule"]:
+                                if rule["rule"]["txMatchRule"]["txCustomRule"]["txEntryPointType"] in txEntryPointType:
+                                    numberOfCustomMatchMethodRules += 1
+                                if rule["rule"]["txMatchRule"]["txCustomRule"]["txEntryPointType"] in ["SERVLET"]:
+                                    for idx, matchCondition in enumerate(rule["rule"]["txMatchRule"]["txCustomRule"]["matchConditions"]):
+                                        if matchCondition["type"] in ["HTTP"] and (len(matchCondition["httpMatch"]) > 0):
+                                            if "uri" in matchCondition["httpMatch"]:
+                                                numberOfCustomMatchURLRules += 1
+                                            if "parameters" in matchCondition["httpMatch"]:
+                                                numberOfCustomMatchHTTPParameterRules += 1
 
                 analysisDataEvaluatedMetrics["numberOfCustomMatchURLRules"] = numberOfCustomMatchURLRules
                 analysisDataEvaluatedMetrics["numberOfCustomMatchMethodRules"] = numberOfCustomMatchMethodRules

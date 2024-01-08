@@ -1,0 +1,64 @@
+import logging
+from collections import OrderedDict
+
+from api.appd.AppDService import AppDService
+from extractionSteps.JobStepBase import JobStepBase
+from util.asyncio_utils import AsyncioUtils
+
+
+class InformationPointsAPM(JobStepBase):
+    def __init__(self):
+        super().__init__("apm")
+
+    async def extract(self, controllerData):
+        """
+        Extract node level details.
+        1. Makes one API call per application to get Data Collectors.
+        2. Makes one API call per Data Collector to get snapshots containing said Data Collector (max 1 result returned).
+        """
+        jobStepName = type(self).__name__
+
+        for host, hostInfo in controllerData.items():
+            logging.info(f'{hostInfo["controller"].host} - Extracting {jobStepName}')
+            controller: AppDService = hostInfo["controller"]
+
+            # Gather necessary metrics.
+            getInformationPointsFutures = []
+
+            for application in hostInfo[self.componentType].values():
+                getInformationPointsFutures.append(controller.getInformationPoints(application["id"]))
+
+            informationPoints = await AsyncioUtils.gatherWithConcurrency(*getInformationPointsFutures)
+
+            for idx, applicationName in enumerate(hostInfo[self.componentType]):
+                application = hostInfo[self.componentType][applicationName]
+                application["informationPoints"] = informationPoints[idx].data
+
+    def analyze(self, controllerData, thresholds):
+        """
+        Analysis of node level details.
+        1. Determines number of Data Collector Fields.
+        """
+
+        jobStepName = type(self).__name__
+
+        # Get thresholds related to job
+        jobStepThresholds = thresholds[self.componentType][jobStepName]
+
+        for host, hostInfo in controllerData.items():
+            logging.info(f'{hostInfo["controller"].host} - Analyzing {jobStepName}')
+
+            for application in hostInfo[self.componentType].values():
+                # Root node of current application for current JobStep.
+                analysisDataRoot = application[jobStepName] = OrderedDict()
+                # This data goes into the 'JobStep - Metrics' xlsx sheet.
+                analysisDataEvaluatedMetrics = analysisDataRoot["evaluated"] = OrderedDict()
+                # This data goes into the 'JobStep - Raw' xlsx sheet.
+                analysisDataRawMetrics = analysisDataRoot["raw"] = OrderedDict()
+
+                # numberOfInformationPointsFieldsConfigured
+                analysisDataEvaluatedMetrics["numberOfInformationPointFieldsConfigured"] = len(application["informationPoints"])
+                analysisDataRawMetrics["numberOfInformationPointFieldsConfigured"] = len(application["informationPoints"])
+
+
+                self.applyThresholds(analysisDataEvaluatedMetrics, analysisDataRoot, jobStepThresholds)
