@@ -187,18 +187,24 @@
 		"HealthRulesAndAlertingAPM_WF": {
 			"platinum": {
 				"numberOfHealthRuleViolations": 10,
-				"numberOfBigPAndaActionsBoundToEnabledPolicies": 3,
-				"numberOfCustomHealthRules": 5
+				"numberOfBigPandaActionsBoundToEnabledPolicies": 3,
+				"numberOfCustomHealthRules": 5,
+				"numberOfSEHealthRules": 5,
+				"numberOfSEHealthRulesInPolicies": 5
 			},
 			"gold": {
 				"numberOfHealthRuleViolations": 20,
-				"numberOfBigPAndaActionsBoundToEnabledPolicies": 2,
-				"numberOfCustomHealthRules": 2
+				"numberOfBigPandaActionsBoundToEnabledPolicies": 2,
+				"numberOfCustomHealthRules": 2,
+				"numberOfSEHealthRules": 5,
+				"numberOfSEHealthRulesInPolicies": 5
 			},
 			"silver": {
 				"numberOfHealthRuleViolations": 50,
-				"numberOfBigPAndaActionsBoundToEnabledPolicies": 1,
-				"numberOfCustomHealthRules": 0
+				"numberOfBigPandaActionsBoundToEnabledPolicies": 1,
+				"numberOfCustomHealthRules": 0,
+				"numberOfSEHealthRules": 5,
+				"numberOfSEHealthRulesInPolicies": 5
 			}
 		},
 		"DataCollectorsAPM": {
