@@ -331,19 +331,6 @@ class ConfigurationAnalysisReport(PostProcessReport):
         if (appFrame['biqEnabled'] == False).any():
             taskList[2].append('BiQ is disabled')
 
-    def informationPointStatus(self, application, taskList):
-        frame = pd.read_excel(self.analysis_sheet, sheet_name='InformationPointsAPM', engine='openpyxl')
-        frame.drop('controller', axis=1)
-        appFrame = frame.loc[frame['application'] == application]
-
-        # Number of data collector fields configured
-        if (appFrame['numberOfInformationPointFieldsConfigured'] < 5).any():
-            if (appFrame['numberOfInformationPointFieldsConfigured'] == 0).any():
-                taskList[2].append('No configured Data Collectors')
-            else:
-                taskList[2].append('Only ' + str(int(appFrame['numberOfInformationPointFieldsConfigured'])) + ' configured Data Collectors')
-
-
     def apmDashBoardsStatus(self, application, taskList):
         frame = pd.read_excel(self.analysis_sheet, sheet_name='DashboardsAPM', engine='openpyxl')
         frame.drop('controller', axis=1)
@@ -379,7 +366,6 @@ class ConfigurationAnalysisReport(PostProcessReport):
         self.healthRulesAlertingStatus(application, taskList)
         self.healthRulesAlertingStatus_WF(application, taskList)
         self.dataCollectorStatus(application, taskList)
- #      self.informationPointStatus(application, taskList)
         self.apmDashBoardsStatus(application, taskList)
 
         return overallRanking

@@ -197,11 +197,6 @@ class AppdController(Consumer):
         """Retrieves Snapshots"""
 
     @params({"output": "json"})
-    @get("/controller/restui/informationPointUiService/getAllInfoPointsListViewData/{applicationID}")
-    def getInformationPoints(self, applicationID: Path):
-        """Retrieves InformationPoints Collectors"""
-
-    @params({"output": "json"})
     @get("/controller/restui/analyticsConfigTxnAnalyticsUiService/getAllVisibleAppsWithAnalyticsInfo")
     def getAnalyticsEnabledStatusForAllApplications(self):
         """Retrieves Analytics Enabled Status for app Applications"""

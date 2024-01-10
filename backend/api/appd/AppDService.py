@@ -427,17 +427,6 @@ class AppDService:
 
         return Result(policyData, None)
 
-    async def getInformationPoints(self, applicationID: int) -> Result:
-        debugString = f"Gathering InfoPoints for Application:{applicationID}"
-        logging.debug(f"{self.host} - {debugString}")
-        response = await self.controller.getInformationPoints(applicationID)
-        informationPoints = await self.getResultFromResponse(response, debugString)
-
-        for informationPoint in informationPoints.data:
-            print(informationPoint)
-
-        return await self.getResultFromResponse(response, debugString)
-
     async def getSnapshotsWithDataCollector(
         self,
         applicationID: int,

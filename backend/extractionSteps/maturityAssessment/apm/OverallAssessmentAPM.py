@@ -30,7 +30,6 @@ class OverallAssessmentAPM(JobStepBase):
             "HealthRulesAndAlertingAPM",
             "HealthRulesAndAlertingAPM_WF",
             "DataCollectorsAPM",
-#            "InformationPointsAPM",
             "DashboardsAPM",
         ]
 

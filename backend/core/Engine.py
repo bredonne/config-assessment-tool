@@ -20,7 +20,6 @@ from extractionSteps.maturityAssessment.apm.BusinessTransactionsAPM import Busin
 from extractionSteps.maturityAssessment.apm.BusinessTransactionsAPM_WF import BusinessTransactionsAPM_WF
 from extractionSteps.maturityAssessment.apm.DashboardsAPM import DashboardsAPM
 from extractionSteps.maturityAssessment.apm.DataCollectorsAPM import DataCollectorsAPM
-from extractionSteps.maturityAssessment.apm.InformationPointsAPM import InformationPointsAPM
 from extractionSteps.maturityAssessment.apm.ErrorConfigurationAPM import ErrorConfigurationAPM
 from extractionSteps.maturityAssessment.apm.HealthRulesAndAlertingAPM import HealthRulesAndAlertingAPM
 from extractionSteps.maturityAssessment.apm.HealthRulesAndAlertingAPM_WF import HealthRulesAndAlertingAPM_WF
@@ -180,7 +179,6 @@ class Engine:
             HealthRulesAndAlertingAPM(),
             HealthRulesAndAlertingAPM_WF(),
             DataCollectorsAPM(),
-            #InformationPointsAPM(),    #ToDo. Find proper InfoPoint API query.
             DashboardsAPM(),
             OverallAssessmentAPM(),
             # BRUM Report
@@ -373,7 +371,7 @@ class Engine:
             )
 
         createCxPpt(self.jobFileName)
-#        createCxHamUseCasePpt(self.jobFileName)
+#        createCxHamUseCasePpt(self.jobFileName)   //Removing call since it causes errors on CAT run.
 
         logging.info(f"----------Complete----------")
         # if controllerData.json file exists, delete it
