@@ -169,42 +169,22 @@
 				"numberOfHealthRuleViolations": 10,
 				"numberOfActionsBoundToEnabledPolicies": 1,
 				"numberOfCustomHealthRules": 5,
-				"numberOfDefaultHealthRulesModified": 2
+				"numberOfDefaultHealthRulesModified": 2,
+				"numberOfAppDBasemonHealthRules":3
 			},
 			"gold": {
 				"numberOfHealthRuleViolations": 20,
 				"numberOfActionsBoundToEnabledPolicies": 1,
 				"numberOfCustomHealthRules": 2,
-				"numberOfDefaultHealthRulesModified": 1
+				"numberOfDefaultHealthRulesModified": 1,
+				"numberOfAppDBasemonHealthRules":3
 			},
 			"silver": {
 				"numberOfHealthRuleViolations": 50,
 				"numberOfActionsBoundToEnabledPolicies": 0,
 				"numberOfCustomHealthRules": 0,
-				"numberOfDefaultHealthRulesModified": 0
-			}
-		},
-		"HealthRulesAndAlertingAPM_WF": {
-			"platinum": {
-				"numberOfHealthRuleViolations": 10,
-				"numberOfBigPandaActionsBoundToEnabledPolicies": 3,
-				"numberOfCustomHealthRules": 5,
-				"numberOfSEHealthRules": 5,
-				"numberOfSEHealthRulesInPolicies": 5
-			},
-			"gold": {
-				"numberOfHealthRuleViolations": 20,
-				"numberOfBigPandaActionsBoundToEnabledPolicies": 2,
-				"numberOfCustomHealthRules": 2,
-				"numberOfSEHealthRules": 5,
-				"numberOfSEHealthRulesInPolicies": 5
-			},
-			"silver": {
-				"numberOfHealthRuleViolations": 50,
-				"numberOfBigPandaActionsBoundToEnabledPolicies": 1,
-				"numberOfCustomHealthRules": 0,
-				"numberOfSEHealthRules": 5,
-				"numberOfSEHealthRulesInPolicies": 5
+				"numberOfDefaultHealthRulesModified": 0,
+				"numberOfAppDBasemonHealthRules":3
 			}
 		},
 		"DataCollectorsAPM": {

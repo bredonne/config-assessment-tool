@@ -28,7 +28,6 @@ class OverallAssessmentAPM(JobStepBase):
             "ServiceEndpointsAPM",
             "ErrorConfigurationAPM",
             "HealthRulesAndAlertingAPM",
-            "HealthRulesAndAlertingAPM_WF",
             "DataCollectorsAPM",
             "DashboardsAPM",
         ]

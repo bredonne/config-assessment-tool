@@ -22,7 +22,6 @@ from extractionSteps.maturityAssessment.apm.DashboardsAPM import DashboardsAPM
 from extractionSteps.maturityAssessment.apm.DataCollectorsAPM import DataCollectorsAPM
 from extractionSteps.maturityAssessment.apm.ErrorConfigurationAPM import ErrorConfigurationAPM
 from extractionSteps.maturityAssessment.apm.HealthRulesAndAlertingAPM import HealthRulesAndAlertingAPM
-from extractionSteps.maturityAssessment.apm.HealthRulesAndAlertingAPM_WF import HealthRulesAndAlertingAPM_WF
 from extractionSteps.maturityAssessment.apm.MachineAgentsAPM import MachineAgentsAPM
 from extractionSteps.maturityAssessment.apm.OverallAssessmentAPM import OverallAssessmentAPM
 from extractionSteps.maturityAssessment.apm.OverheadAPM import OverheadAPM
@@ -177,7 +176,6 @@ class Engine:
             ServiceEndpointsAPM(),
             ErrorConfigurationAPM(),
             HealthRulesAndAlertingAPM(),
-            HealthRulesAndAlertingAPM_WF(),
             DataCollectorsAPM(),
             DashboardsAPM(),
             OverallAssessmentAPM(),
