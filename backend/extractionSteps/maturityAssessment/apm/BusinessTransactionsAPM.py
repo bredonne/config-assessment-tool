@@ -134,15 +134,19 @@ class BusinessTransactionsAPM(JobStepBase):
                     "Quartz",
                 ]
                 numberOfCustomMatchRules = 0
+                numberOfRulesWithNonZeroPriority = 0
                 if "ruleScopeSummaryMappings" in application["btMatchRules"]:
                     for rule in application["btMatchRules"]["ruleScopeSummaryMappings"]:
                         if rule["rule"]["summary"]["name"] not in defaultBtNameList and rule["rule"]["enabled"]:
                             numberOfCustomMatchRules += 1
+                        if rule["rule"]["priority"] > 0:
+                            numberOfRulesWithNonZeroPriority += 1
                 analysisDataEvaluatedMetrics["numberCustomMatchRules"] = numberOfCustomMatchRules
 
                 analysisDataRawMetrics["numberOfBTs"] = numberOfBusinessTransactions
                 analysisDataRawMetrics["businessTransactionsWithLoad"] = businessTransactionsWithLoad
                 analysisDataRawMetrics["btLockdownEnabled"] = analysisDataEvaluatedMetrics["btLockdownEnabled"]
                 analysisDataRawMetrics["numberCustomMatchRules"] = numberOfCustomMatchRules
+                analysisDataRawMetrics["numberOfRulesWithNonZeroPriority"] = numberOfRulesWithNonZeroPriority
 
                 self.applyThresholds(analysisDataEvaluatedMetrics, analysisDataRoot, jobStepThresholds)
