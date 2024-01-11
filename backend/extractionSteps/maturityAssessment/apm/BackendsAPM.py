@@ -105,9 +105,12 @@ class BackendsAPM(JobStepBase):
 
                 # callsPerMinute
                 numberOfBackendsWithLoad = 0.0
+                numberOfDBBackendsWithLoad = 0
                 for backend in application["backends"]:
                     if backend["callsPerMinute"] > 0:
                         numberOfBackendsWithLoad += 1
+                        if "JDBC" in str(backend["exitPointType"]):
+                            numberOfDBBackendsWithLoad +=1
 
                 # percentBackendsWithLoad
                 if numberOfBackendsWithLoad != 0.0:
@@ -133,6 +136,7 @@ class BackendsAPM(JobStepBase):
 
                 analysisDataRawMetrics["numberOfBackends"] = len(application["backends"])
                 analysisDataRawMetrics["numberOfBackendsWithLoad"] = numberOfBackendsWithLoad
+                analysisDataRawMetrics["numberOfDBBackendsWithLoad"] = numberOfDBBackendsWithLoad
                 analysisDataRawMetrics["backendLimit"] = backendLimit
                 analysisDataRawMetrics["numberOfModifiedDefaultBackendDiscoveryConfigs"] = numberOfModifiedDefaultBackendDiscoveryConfigs
                 analysisDataRawMetrics["numberOfCustomExitPoints"] = numberOfCustomExitPoints
