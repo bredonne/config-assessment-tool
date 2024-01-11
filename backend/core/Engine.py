@@ -17,7 +17,6 @@ from extractionSteps.general.Synthetics import Synthetics
 from extractionSteps.maturityAssessment.apm.AppAgentsAPM import AppAgentsAPM
 from extractionSteps.maturityAssessment.apm.BackendsAPM import BackendsAPM
 from extractionSteps.maturityAssessment.apm.BusinessTransactionsAPM import BusinessTransactionsAPM
-from extractionSteps.maturityAssessment.apm.BusinessTransactionsAPM_WF import BusinessTransactionsAPM_WF
 from extractionSteps.maturityAssessment.apm.DashboardsAPM import DashboardsAPM
 from extractionSteps.maturityAssessment.apm.DataCollectorsAPM import DataCollectorsAPM
 from extractionSteps.maturityAssessment.apm.ErrorConfigurationAPM import ErrorConfigurationAPM
@@ -170,7 +169,6 @@ class Engine:
             AppAgentsAPM(),
             MachineAgentsAPM(),
             BusinessTransactionsAPM(),
-            BusinessTransactionsAPM_WF(),
             BackendsAPM(),
             OverheadAPM(),
             ServiceEndpointsAPM(),

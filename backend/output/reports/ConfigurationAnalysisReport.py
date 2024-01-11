@@ -137,47 +137,6 @@ class ConfigurationAnalysisReport(PostProcessReport):
             else:
                 taskList[2].append('Only ' + str(int(appFrame['numberCustomMatchRules'])) + ' Custom Match Rules')
 
-    def businessTranStatus_WF(self, application, taskList):
-        frame = pd.read_excel(self.analysis_sheet, sheet_name='BusinessTransactionsAPM_WF', engine='openpyxl')
-        frame.drop('controller', axis=1)
-        appFrame = frame.loc[frame['application'] == application]
-
-        # Number of Business Transcations
-        if (appFrame['numberOfBTs'] > 200).any():
-            taskList[1].append("Reduce amount of Business transactions from " + str(int(appFrame['numberOfBTs'])))
-
-        # % of Business Transactions with load
-        if (appFrame['percentBTsWithLoad'] < 90).any():
-            taskList[1].append(str(100 - int(appFrame['percentBTsWithLoad'])) + '% of Business Transactions have no load over the last 24 hours')
-
-        # Business Transaction Lockdown
-        if (appFrame['btLockdownEnabled'] == False).any():
-            taskList[1].append("Business Transaction Lockdown is disabled")
-
-        # Number of Custom Match Rules
-        if (appFrame['numberCustomMatchRules'] < 3).any():
-            if (appFrame['numberCustomMatchRules'] == 0).any():
-                taskList[2].append('No Custom Match Rules')
-            else:
-                taskList[2].append('Only ' + str(int(appFrame['numberCustomMatchRules'])) + ' Custom Match Rules')
-
-        # Number of Custom Match Rules WFMODIFIED
-        if (appFrame['numberOfCustomMatchURLRules'] < 3).any():
-            if (appFrame['numberOfCustomMatchURLRules'] == 0).any():
-                taskList[2].append('No Custom Match URL Rules')
-            else:
-                taskList[2].append('Only ' + str(int(appFrame['numberOfCustomMatchURLRules'])) + ' Custom Match URL Rules')
-        if (appFrame['numberOfCustomMatchMethodRules'] < 3).any():
-            if (appFrame['numberOfCustomMatchMethodRules'] == 0).any():
-                taskList[2].append('No Custom Match Method Rules')
-            else:
-                taskList[2].append('Only ' + str(int(appFrame['numberOfCustomMatchMethodRules'])) + ' Custom Match METHOD Rules')
-        if (appFrame['numberOfCustomMatchHTTPParameterRules'] < 3).any():
-            if (appFrame['numberOfCustomMatchHTTPParameterRules'] == 0).any():
-                taskList[2].append('No Custom Match HTTPRules Rules')
-            else:
-                taskList[2].append('Only ' + str(int(appFrame['numberOfCustomMatchHTTPParameterRules'])) + ' Custom Match HTTPPARMN Rules')
-
     def backendStatus(self, application, taskList):
         frame = pd.read_excel(self.analysis_sheet, sheet_name='BackendsAPM', engine='openpyxl')
         frame.drop('controller', axis=1)
@@ -331,7 +290,6 @@ class ConfigurationAnalysisReport(PostProcessReport):
         self.appAgentStatus(application, taskList)
         self.machineAgentStatus(application, taskList)
         self.businessTranStatus(application, taskList)
-        self.businessTranStatus_WF(application, taskList)
         self.backendStatus(application, taskList)
         self.overheadStatus(application, taskList)
         self.serviceEndpointStatus(application, taskList)

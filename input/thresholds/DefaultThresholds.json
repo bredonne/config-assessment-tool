@@ -44,35 +44,6 @@
 				"numberOfBTs": 600
 			}
 		},
-		"BusinessTransactionsAPM_WF": {
-			"platinum": {
-				"numberOfCustomMatchURLRules": 3,
-				"numberOfCustomMatchMethodRules": 3,
-				"numberOfCustomMatchHTTPParameterRules": 3,
-				"numberCustomMatchRules": 3,
-				"btLockdownEnabled": true,
-				"percentBTsWithLoad": 90,
-				"numberOfBTs": 200
-			},
-			"gold": {
-				"numberOfCustomMatchURLRules": 2,
-				"numberOfCustomMatchMethodRules": 2,
-				"numberOfCustomMatchHTTPParameterRules": 2,
-				"numberCustomMatchRules": 1,
-				"btLockdownEnabled": false,
-				"percentBTsWithLoad": 75,
-				"numberOfBTs": 400
-			},
-			"silver": {
-				"numberOfCustomMatchURLRules": 1,
-				"numberOfCustomMatchMethodRules": 1,
-				"numberOfCustomMatchHTTPParameterRules": 1,
-				"numberCustomMatchRules": 0,
-				"btLockdownEnabled": false,
-				"percentBTsWithLoad": 0,
-				"numberOfBTs": 600
-			}
-		},
 		"MachineAgentsAPM": {
 			"platinum": {
 				"percentAgentsLessThan1YearOld": 100,
