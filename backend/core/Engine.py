@@ -23,6 +23,7 @@ from extractionSteps.maturityAssessment.apm.ErrorConfigurationAPM import ErrorCo
 from extractionSteps.maturityAssessment.apm.HealthRulesAndAlertingAPM import HealthRulesAndAlertingAPM
 from extractionSteps.maturityAssessment.apm.MachineAgentsAPM import MachineAgentsAPM
 from extractionSteps.maturityAssessment.apm.OverallAssessmentAPM import OverallAssessmentAPM
+from extractionSteps.maturityAssessment.apm.OverallAssessmentAPM_WF import OverallAssessmentAPM_WF
 from extractionSteps.maturityAssessment.apm.OverheadAPM import OverheadAPM
 from extractionSteps.maturityAssessment.apm.ServiceEndpointsAPM import ServiceEndpointsAPM
 from extractionSteps.maturityAssessment.brum.HealthRulesAndAlertingBRUM import HealthRulesAndAlertingBRUM
@@ -177,6 +178,7 @@ class Engine:
             DataCollectorsAPM(),
             DashboardsAPM(),
             OverallAssessmentAPM(),
+            OverallAssessmentAPM_WF(),
             # BRUM Report
             NetworkRequestsBRUM(),
             HealthRulesAndAlertingBRUM(),

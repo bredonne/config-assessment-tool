@@ -95,7 +95,10 @@ class HealthRulesAndAlertingAPM(JobStepBase):
                     if "APPD_BASEMON" in str(healthrule):  # Hardcode rule name for now. Todo: Add ability to specify HR name pattern within Jobfile
                         NumberOfNamedHealthRules += 1
                 analysisDataEvaluatedMetrics["numberOfAppDBasemonHealthRules"] = NumberOfNamedHealthRules
+
                 analysisDataRawMetrics["numberOfAppDBasemonHealthRules"] = NumberOfNamedHealthRules
+                analysisDataRawMetrics["Basemonandbigpandaenabled"] = NumberOfNamedHealthRules
+
 
                 #ServiceEndpoint Rule Check
                 SEHealthRules = 0
@@ -205,6 +208,9 @@ class HealthRulesAndAlertingAPM(JobStepBase):
 
                 # numberOfCustomHealthRules
                 analysisDataEvaluatedMetrics["numberOfCustomHealthRules"] = len(
+                    set(application["healthRules"].keys()).symmetric_difference(defaultHealthRules.keys())
+                )
+                analysisDataRawMetrics["numberOfCustomHealthRules"] = len(
                     set(application["healthRules"].keys()).symmetric_difference(defaultHealthRules.keys())
                 )
 

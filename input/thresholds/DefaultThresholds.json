@@ -211,6 +211,20 @@
 				"percentageTotalGoldOrBetter": 0,
 				"percentageTotalSilverOrBetter": 80
 			}
+		},
+		"OverallAssessmentAPM_WF": {
+			"platinum": {
+				"HealthRuleScore": 3,
+				"BTScore": 3
+			},
+			"gold": {
+				"HealthRuleScore" : 2,
+				"BTScore": 2
+			},
+			"silver": {
+				"HealthRuleScore": 0,
+				"BTScore": 0
+			}
 		}
 	},
 	"brum": {
