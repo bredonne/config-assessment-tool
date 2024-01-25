@@ -67,6 +67,7 @@ class DashboardsAPM(JobStepBase):
 
                 # numberOfDashboards
                 analysisDataEvaluatedMetrics["numberOfDashboards"] = len(application["apmDashboards"]) + len(application["biqDashboards"])
+                analysisDataRawMetrics["numberOfDashboards"] = len(application["apmDashboards"]) + len(application["biqDashboards"])
 
                 # percentageOfDashboardsModifiedLast6Months
                 numDashboardsModifiedLast6Months = 0
