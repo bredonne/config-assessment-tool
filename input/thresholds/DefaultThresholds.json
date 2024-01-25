@@ -141,21 +141,21 @@
 				"numberOfActionsBoundToEnabledPolicies": 1,
 				"numberOfCustomHealthRules": 5,
 				"numberOfDefaultHealthRulesModified": 2,
-				"numberOfAppDBasemonHealthRules":3
+				"NumberOfBasemonHealthRules":3
 			},
 			"gold": {
 				"numberOfHealthRuleViolations": 20,
 				"numberOfActionsBoundToEnabledPolicies": 1,
 				"numberOfCustomHealthRules": 2,
 				"numberOfDefaultHealthRulesModified": 1,
-				"numberOfAppDBasemonHealthRules":3
+				"NumberOfBasemonHealthRules":3
 			},
 			"silver": {
 				"numberOfHealthRuleViolations": 50,
 				"numberOfActionsBoundToEnabledPolicies": 0,
 				"numberOfCustomHealthRules": 0,
 				"numberOfDefaultHealthRulesModified": 0,
-				"numberOfAppDBasemonHealthRules":3
+				"NumberOfBasemonHealthRules":3
 			}
 		},
 		"DataCollectorsAPM": {
@@ -212,18 +212,44 @@
 				"percentageTotalSilverOrBetter": 80
 			}
 		},
-		"OverallAssessmentAPM_WF": {
+		"JMXAPM": {
 			"platinum": {
-				"HealthRuleScore": 3,
-				"BTScore": 3
+				"numberOfJMXConfigs": 13,
+				"numberOfModifiedJMXConfigs": 3
 			},
 			"gold": {
-				"HealthRuleScore" : 2,
-				"BTScore": 2
+				"numberOfJMXConfigs": 12,
+				"numberOfModifiedJMXConfigs": 2
 			},
 			"silver": {
-				"HealthRuleScore": 0,
-				"BTScore": 0
+				"numberOfJMXConfigs": 11,
+				"numberOfModifiedJMXConfigs": 1
+			}
+		},
+		"OverallAssessmentAPM_WF": {
+			"platinum": {
+				"BASEMONHealthRuleScore": 3,
+				"BackendScore": 3,
+				"BTScore": 3,
+				"DashboardScore" : 3,
+				"MIDCScore" : 3,
+				"JMXScore" : 3
+			},
+			"gold": {
+				"BASEMONHealthRuleScore" : 2,
+				"BackendScore": 2,
+				"BTScore": 2,
+				"DashboardScore" : 2,
+				"MIDCScore" : 2,
+				"JMXScore" : 2
+			},
+			"silver": {
+				"BASEMONHealthRuleScore": 1,
+				"BackendScore": 1,
+				"BTScore": 1,
+				"DashboardScore" : 1,
+				"MIDCScore" : 1,
+				"JMXScore" : 1
 			}
 		}
 	},

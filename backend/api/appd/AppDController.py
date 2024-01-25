@@ -57,6 +57,11 @@ class AppdController(Consumer):
         """Retrieves Application Level Business Transaction Configurations"""
 
     @params({"output": "json"})
+    @get("/controller/restui/jmxConfiguration/getRuleCollectionsForApplication/{applicationID}")
+    def getJMXConfig(self, applicationID: Path):
+        """Retrieves Application Level JMX Configurations"""
+
+    @params({"output": "json"})
     @get("/controller/rest/applications/{applicationID}/backends")
     def getBackends(self, applicationID: Path):
         """Retrieves Backends"""

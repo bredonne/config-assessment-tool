@@ -315,6 +315,12 @@ class AppDService:
         response = await self.controller.getAppLevelBTConfig(applicationID)
         return await self.getResultFromResponse(response, debugString)
 
+    async def getJMXConfig(self, applicationID: int) -> Result:
+        debugString = f"Gathering Application JMX Configuration Settings for Application:{applicationID}"
+        logging.debug(f"{self.host} - {debugString}")
+        response = await self.controller.getJMXConfig(applicationID)
+        return await self.getResultFromResponse(response, debugString)
+
     async def getCustomMetrics(self, applicationID: int, tierName: str) -> Result:
         debugString = f"Gathering Custom Metrics for Application:{applicationID}"
         logging.debug(f"{self.host} - {debugString}")

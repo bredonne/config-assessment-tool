@@ -16,6 +16,7 @@ from extractionSteps.general.CustomMetrics import CustomMetrics
 from extractionSteps.general.Synthetics import Synthetics
 from extractionSteps.maturityAssessment.apm.AppAgentsAPM import AppAgentsAPM
 from extractionSteps.maturityAssessment.apm.BackendsAPM import BackendsAPM
+from extractionSteps.maturityAssessment.apm.JMXAPM import JMXAPM
 from extractionSteps.maturityAssessment.apm.BusinessTransactionsAPM import BusinessTransactionsAPM
 from extractionSteps.maturityAssessment.apm.DashboardsAPM import DashboardsAPM
 from extractionSteps.maturityAssessment.apm.DataCollectorsAPM import DataCollectorsAPM
@@ -171,6 +172,7 @@ class Engine:
             MachineAgentsAPM(),
             BusinessTransactionsAPM(),
             BackendsAPM(),
+            JMXAPM(),
             OverheadAPM(),
             ServiceEndpointsAPM(),
             ErrorConfigurationAPM(),
