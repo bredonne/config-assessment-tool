@@ -89,16 +89,31 @@ class HealthRulesAndAlertingAPM(JobStepBase):
                 policyEventCounts = application["eventCounts"]["policyViolationEventCounts"]["totalPolicyViolations"]
                 analysisDataEvaluatedMetrics["numberOfHealthRuleViolations"] = policyEventCounts["warning"] + policyEventCounts["critical"]
 
-                #Check for HealthRules named with specific name.
-                NumberOfNamedHealthRules = 0
+                # Check for HealthRules having APPD_BASEMON in the name.
+                NumberOfBasemonHealthRules = 0
+                NumberOfBasemonHealthRulesWithPolicy = 0
+                NumberOfBasemonHealthRulesWithPandaAction = 0
                 for healthrule, healthruleinfo in application["healthRules"].items():
-                    if "APPD_BASEMON" in str(healthrule):  # Hardcode rule name for now. Todo: Add ability to specify HR name pattern within Jobfile
-                        NumberOfNamedHealthRules += 1
-                analysisDataEvaluatedMetrics["numberOfAppDBasemonHealthRules"] = NumberOfNamedHealthRules
+                    if "APPD_BASEMON" in str(healthrule):  # Hardcode rule name for now.
+                        NumberOfBasemonHealthRules += 1
+                        # Check if HR is specified in a policy.
+                        for idx, policy in application["policies"].items():
+                            try:
+                                if policy["enabled"] and policy["events"]["healthRuleEvents"] is not None and "healthRules" in policy["events"]["healthRuleEvents"]["healthRuleScope"]:  # Better type checking for when a policy does not act on HR's but other checkboxes
+                                    if policy["events"]["healthRuleEvents"]["healthRuleScope"]["healthRules"] is not None:
+                                        if healthrule in policy["events"]["healthRuleEvents"]["healthRuleScope"]["healthRules"]:
+                                            NumberOfBasemonHealthRulesWithPolicy += 1
+                                            if "actions" in policy:  # Check for BigPanda Action
+                                                for action in policy["actions"]: 
+                                                    if "BigPanda" in str(action["actionName"]):
+                                                        NumberOfBasemonHealthRulesWithPandaAction += 1
+                            except (KeyError, TypeError, IndexError):
+                                print("Couldn't find a match for the key:")
 
-                analysisDataRawMetrics["numberOfAppDBasemonHealthRules"] = NumberOfNamedHealthRules
-                analysisDataRawMetrics["Basemonandbigpandaenabled"] = NumberOfNamedHealthRules
-
+                analysisDataEvaluatedMetrics["NumberOfBasemonHealthRules"] = NumberOfBasemonHealthRules
+                analysisDataRawMetrics["NumberOfBasemonHealthRules"] = NumberOfBasemonHealthRules
+                analysisDataRawMetrics["NumberOfBasemonHealthRulesWithPolicy"] = NumberOfBasemonHealthRulesWithPolicy
+                analysisDataRawMetrics["NumberOfBasemonHealthRulesWithPandaAction"] = NumberOfBasemonHealthRulesWithPandaAction
 
                 #ServiceEndpoint Rule Check
                 SEHealthRules = 0
@@ -114,7 +129,7 @@ class HealthRulesAndAlertingAPM(JobStepBase):
                                     if policy["events"]["healthRuleEvents"]["healthRuleScope"]["healthRules"] is not None:
                                         if healthrule in policy["events"]["healthRuleEvents"]["healthRuleScope"]["healthRules"]:
                                             SEHealthRulesWithPolicy += 1
-                                            if "actions" in policy:  #Check for Panda Action
+                                            if "actions" in policy:  #Check for BigPanda Action
                                                 for action in policy["actions"]:
                                                     if "BigPanda" in str(action["actionName"]):
                                                         SEHealthRulesWithPolicyPandaAction += 1
@@ -137,11 +152,10 @@ class HealthRulesAndAlertingAPM(JobStepBase):
                         for idx, policy in application["policies"].items():
                             try:
                                 if policy["enabled"] and policy["events"]["healthRuleEvents"] is not None and "healthRules" in policy["events"]["healthRuleEvents"]["healthRuleScope"]:  #Better type checking for when a policy does not act on HR's but other checkboxes
-                                #if policy["enabled"] and "healthRules" in policy["events"]["healthRuleEvents"]["healthRuleScope"]:
                                     if policy["events"]["healthRuleEvents"]["healthRuleScope"]["healthRules"] is not None:
                                         if healthrule in policy["events"]["healthRuleEvents"]["healthRuleScope"]["healthRules"]:
                                             BackendHealthRulesWithPolicy += 1
-                                            if "actions" in policy:  #Check for Panda Action
+                                            if "actions" in policy:  #Check for BigPanda Action
                                                 for action in policy["actions"]:
                                                     if "BigPanda" in str(action["actionName"]):
                                                         BackendHealthRulesWithPolicyPandaAction += 1
@@ -155,7 +169,7 @@ class HealthRulesAndAlertingAPM(JobStepBase):
 
                 #Number of active policies going to BigPanda
                 NumberOfActivePolicies = 0
-                NumberOfBasemonNamedPolicies = 0
+                NumberOfActiveBasemonPolicies = 0
                 NumberOfActivePoliciesWithAllHealthRuleScope = 0
                 NumberOfActivePoliciesWithBigPandaAction = 0
                 BigPanda_actionsInEnabledPolicies = set()
@@ -163,7 +177,7 @@ class HealthRulesAndAlertingAPM(JobStepBase):
                     if policy["enabled"]:
                         NumberOfActivePolicies += 1
                         if "APPD_BASEMON" in str(policy):  # Hardcode Policy name for now.
-                            NumberOfBasemonNamedPolicies += 1
+                            NumberOfActiveBasemonPolicies += 1
                         if policy["events"]["healthRuleEvents"] is not None and "All_HEALTH_RULES" in policy["events"]["healthRuleEvents"]["healthRuleScope"]:
                             NumberOfActivePoliciesWithAllHealthRuleScope += 1
                         if "actions" in policy:
@@ -174,10 +188,8 @@ class HealthRulesAndAlertingAPM(JobStepBase):
                         else:
                             logging.warning(f"Policy {policy['name']} is enabled but has no actions bound to it.")
 
-                #analysisDataEvaluatedMetrics["numberOfBigPandaActionsBoundToEnabledPolicies"] = len(BigPanda_actionsInEnabledPolicies)
-                #analysisDataEvaluatedMetrics["numberOfBigPandaActionsBoundToEnabledPolicies"] = PoliciesWithBigPandaAction
-                analysisDataRawMetrics["numberOfPoliciesWithBigPandaAction"] = NumberOfActivePoliciesWithBigPandaAction
-                analysisDataRawMetrics["NumberOfBasemonNamedPolicies"] = NumberOfBasemonNamedPolicies
+                analysisDataRawMetrics["NumberOfActivePoliciesWithBigPandaAction"] = NumberOfActivePoliciesWithBigPandaAction
+                analysisDataRawMetrics["NumberOfActiveBasemonPolicies"] = NumberOfActiveBasemonPolicies
 
                 # numberOfDefaultHealthRulesModified
                 defaultHealthRulesModified = 0
