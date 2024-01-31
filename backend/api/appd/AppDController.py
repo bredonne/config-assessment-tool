@@ -327,6 +327,11 @@ class AppdController(Consumer):
         """Retrieves virtual pages config"""
 
     @params({"output": "json"})
+    @get("/controller/restui/browserRUMConfig/getSettingsConfig/{applicationId}")
+    def getSettingsConfig(self, applicationId: Path):
+        """Retrieves virtual pages config"""
+
+    @params({"output": "json"})
     @post("/controller/restui/browserSnapshotList/getSnapshots")
     def getBrowserSnapshots(self, body: Body):
         """Retrieves browser snapshots"""
