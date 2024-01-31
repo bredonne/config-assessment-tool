@@ -171,6 +171,30 @@ class AppDService:
         response = await self.controller.getBackends(applicationID)
         return await self.getResultFromResponse(response, debugString)
 
+    async def getApplicationDBCollectorStatus(self, applicationId: int) -> Result:
+        debugString = f"Gathering List of Application DB Collector Status"
+        logging.debug(f"{self.host} - {debugString}")
+        body = {
+            "requestFilter": {"queryParams": {"applicationId": applicationId}, "filters": []},
+            "resultColumns": ["ID", "NAME", "TYPE"],
+            "offset": 0,
+            "limit": -1,
+            "searchFilters": [],
+            "columnSorts": [],
+            "timeRangeStart": self.startTime,
+            "timeRangeEnd": self.endTime,
+        }
+        response = await self.controller.getApplicationDBCollectorStatus(json.dumps(body))
+        return await self.getResultFromResponse(response, debugString)
+        #if result.error is not None:
+        #   print(result)
+        #   return result
+        
+        #dbCollectorStatus = [database["dbCollectorStatus"] for database in result.data["dbCollectorStatus"]]
+        #dbCollectors = list(filter(lambda d: "UNMAPPED" in d, dbCollectorStatus))
+
+        #return len(dbCollectors)
+
     async def getConfigurations(self) -> Result:
         debugString = f"Gathering Controller Configurations"
         logging.debug(f"{self.host} - {debugString}")
@@ -585,6 +609,14 @@ class AppDService:
                 returnedDashboards.append(dashboardSchema)
 
         return Result(returnedDashboards, None)
+
+    # async def getReports(self) -> Result:
+        # debugString = f"Gathering Reports"
+        # logging.debug(f"{self.host} - {debugString}")
+        # response = await self.controller.getAllReportsMetadata()
+        # logging.info(f'{response} DEBUG_LINE_REPORT_RESPONSE')
+        # allReportsMetadata = await self.getResultFromResponse(response, debugString)
+        # return await self.getResultFromResponse(response, debugString)
 
     async def getUserPermissions(self, username: str) -> Result:
         debugString = f"Gathering Permission set for user: {username}"

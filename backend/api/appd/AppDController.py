@@ -67,6 +67,11 @@ class AppdController(Consumer):
         """Retrieves Backends"""
 
     @params({"output": "json"})
+    @post("/controller/restui/backend/list/database")
+    def getApplicationDBCollectorStatus(self, body: Body):
+        """Retrieves db summary list from application and checks for dbBackendStatus"""
+
+    @params({"output": "json"})
     @get("/controller/rest/configuration")
     def getConfigurations(self):
         """Retrieves Controller Configurations"""
@@ -215,6 +220,11 @@ class AppdController(Consumer):
     @get("/controller/CustomDashboardImportExportServlet")
     def getDashboard(self, dashboardId: Query("dashboardId")):
         """Retrieves a single Dashboard"""
+
+    # @params({"output": "json"})
+    # @get("/controller/restui/report/list")
+    # def getAllReportsMetadata(self):
+    #     """Retrieves all Reports"""
 
     @params({"output": "json"})
     @get("/controller/restui/userAdministrationUiService/users")
