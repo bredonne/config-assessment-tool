@@ -310,6 +310,17 @@
 				"percentageTotalGoldOrBetter": 0,
 				"percentageTotalSilverOrBetter": 80
 			}
+		},
+		"OverallAssessmentBRUM_WF": {
+			"platinum": {
+				"sessionTimeoutMin": 5
+			},
+			"gold": {
+				"sessionTimeoutMin": 5
+			},
+			"silver": {
+				"sessionTimeoutMin": 5
+			}
 		}
 	},
 	"mrum": {

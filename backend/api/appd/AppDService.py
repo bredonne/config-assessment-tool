@@ -912,6 +912,12 @@ class AppDService:
         response = await self.controller.getAJAXConfig(applicationId)
         return await self.getResultFromResponse(response, debugString)
 
+    async def getSettingsConfig(self, applicationId: int) -> Result:
+        debugString = f"Gathering Settings Config for Application {applicationId}"
+        logging.debug(f"{self.host} - {debugString}")
+        response = await self.controller.getSettingsConfig(applicationId)
+        return await self.getResultFromResponse(response, debugString)
+
     async def getVirtualPagesConfig(self, applicationId: int) -> Result:
         debugString = f"Gathering Virtual Pages Config for Application {applicationId}"
         logging.debug(f"{self.host} - {debugString}")

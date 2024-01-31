@@ -30,6 +30,7 @@ from extractionSteps.maturityAssessment.apm.ServiceEndpointsAPM import ServiceEn
 from extractionSteps.maturityAssessment.brum.HealthRulesAndAlertingBRUM import HealthRulesAndAlertingBRUM
 from extractionSteps.maturityAssessment.brum.NetworkRequestsBRUM import NetworkRequestsBRUM
 from extractionSteps.maturityAssessment.brum.OverallAssessmentBRUM import OverallAssessmentBRUM
+from extractionSteps.maturityAssessment.brum.OverallAssessmentBRUM_WF import OverallAssessmentBRUM_WF
 from extractionSteps.maturityAssessment.mrum.HealthRulesAndAlertingMRUM import HealthRulesAndAlertingMRUM
 from extractionSteps.maturityAssessment.mrum.NetworkRequestsMRUM import NetworkRequestsMRUM
 from extractionSteps.maturityAssessment.mrum.OverallAssessmentMRUM import OverallAssessmentMRUM
@@ -185,6 +186,7 @@ class Engine:
             NetworkRequestsBRUM(),
             HealthRulesAndAlertingBRUM(),
             OverallAssessmentBRUM(),
+            OverallAssessmentBRUM_WF(),
             # MRUM Report
             NetworkRequestsMRUM(),
             HealthRulesAndAlertingMRUM(),
