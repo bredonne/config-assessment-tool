@@ -44,6 +44,9 @@ class ControllerLevelDetails(JobStepBase):
             logging.info(f'{hostInfo["controller"].host} - Extracting Dashboards')
             hostInfo["exportedDashboards"] = (await controller.getDashboards()).data
 
+            # logging.info(f'{hostInfo["controller"].host} - Extracting Reports')
+            # hostInfo["exportedReports"] = (await controller.getReports()).data
+
             logging.info(f'{hostInfo["controller"].host} - Extracting Licenses')
             hostInfo["accountLicenseUsage"] = (await controller.getAccountUsageSummary()).data
             hostInfo["eumLicenseUsage"] = (await controller.getEumLicenseUsage()).data

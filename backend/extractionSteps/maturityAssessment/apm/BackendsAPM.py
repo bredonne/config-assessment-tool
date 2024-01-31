@@ -28,11 +28,13 @@ class BackendsAPM(JobStepBase):
 
             # Gather necessary metrics.
             getBackendsFutures = []
+            getBackendsDBCollectorFutures = []
             getAllCustomExitPointsFutures = []
             getBackendDiscoveryConfigsFutures = []
             backendCallsPerMinuteFutures = []
             for application in hostInfo[self.componentType].values():
                 getBackendsFutures.append(controller.getBackends(application["id"]))
+                getBackendsDBCollectorFutures.append(controller.getApplicationDBCollectorStatus(application["id"])) 
                 getAllCustomExitPointsFutures.append(controller.getAllCustomExitPoints(application["id"]))
                 getBackendDiscoveryConfigsFutures.append(controller.getBackendDiscoveryConfigs(application["id"]))
                 backendCallsPerMinuteFutures.append(
@@ -44,7 +46,9 @@ class BackendsAPM(JobStepBase):
                         duration_in_mins=controller.timeRangeMins,
                     )
                 )
+
             backends = await AsyncioUtils.gatherWithConcurrency(*getBackendsFutures)
+            backendsDBCollectors = await AsyncioUtils.gatherWithConcurrency(*getBackendsDBCollectorFutures)
             allCustomExitPoints = await AsyncioUtils.gatherWithConcurrency(*getAllCustomExitPointsFutures)
             backendDiscoveryConfigs = await AsyncioUtils.gatherWithConcurrency(*getBackendDiscoveryConfigsFutures)
             backendCallsPerMinute = await AsyncioUtils.gatherWithConcurrency(*backendCallsPerMinuteFutures)
@@ -70,6 +74,7 @@ class BackendsAPM(JobStepBase):
             # Append node level information to overall host info
             for idx, application in enumerate(hostInfo[self.componentType]):
                 hostInfo[self.componentType][application]["backends"] = backends[idx].data
+                hostInfo[self.componentType][application]["potentialDBCollectors"] = backendsDBCollectors[idx].data["data"]
                 hostInfo[self.componentType][application]["allCustomExitPoints"] = allCustomExitPoints[idx].data
                 hostInfo[self.componentType][application]["backendDiscoveryConfigs"] = backendDiscoveryConfigs[idx].data
                 for backend in backends[idx].data:
@@ -77,7 +82,23 @@ class BackendsAPM(JobStepBase):
                         backend["callsPerMinute"] = backendNameToCallsPerMinuteMap[backend["name"]]
                     except KeyError:
                         backend["callsPerMinute"] = 0
-                        logging.debug(f'{hostInfo["controller"].host} - Node: {backend["name"]} returned no metric data for Agent Availability.')
+                        logging.debug(f'{hostInfo["controller"].host} - Node: {backend["name"]} returned no metric data for Agent Availability.')               
+                """
+                numberOfPotentialDBCollectors = 0
+                for potentialDBCollector in backendsDBCollectors[idx].data["data"]:
+                    try:
+                        # Correct/more efficient method would be to cross reference the ids from backendsDBCollectors + backends and grab the Vendor value from backends to check for oracle or mssql
+                        databases = ["oracle", "mssql"]
+                        if any([x in potentialDBCollector["name"].lower() for x in databases]) or "ADO.NET" in potentialDBCollector["exitPointSubtype"]:
+                            print('Found Oracle or MS SQL!')
+                            if "UNMAPPED" in potentialDBCollector["dbBackendStatus"]:
+                                print(f'Needs DB Collector!')
+                                numberOfPotentialDBCollectors += 1
+                                print(numberOfPotentialDBCollectors)
+                        hostInfo[self.componentType][application]["numberOfPotentialDBCollectors"] = numberOfPotentialDBCollectors
+                    except KeyError:
+                        logging.debug(f'{hostInfo["controller"].host} - Node: {backend["name"]} returned no backend.')
+                """
 
     def analyze(self, controllerData, thresholds):
         """
@@ -117,6 +138,26 @@ class BackendsAPM(JobStepBase):
                     analysisDataEvaluatedMetrics["percentBackendsWithLoad"] = numberOfBackendsWithLoad / len(application["backends"]) * 100
                 else:
                     analysisDataEvaluatedMetrics["percentBackendsWithLoad"] = 0
+
+                # potentialDBCollectors
+                numberOfPotentialDBCollectors = 0
+                for potentialDBCollector in application["potentialDBCollectors"]:
+                    try:
+                        # Correct/more efficient method would be to cross reference the ids from backendsDBCollectors + backends and grab the Vendor value from backends to check for oracle or mssql
+                        databases = ["oracle", "mssql"]
+                        if any([x in potentialDBCollector["name"].lower() for x in databases]) or "ADO.NET" in potentialDBCollector["exitPointSubtype"]:
+                            #print('Found Oracle or MS SQL!')
+                            if "UNMAPPED" in potentialDBCollector["dbBackendStatus"]:
+                                #print(f'Needs DB Collector!')
+                                numberOfPotentialDBCollectors += 1
+                                #print(numberOfPotentialDBCollectors)
+                    except KeyError:
+                        logging.debug(f'{hostInfo["controller"].host} - Node: {backend["name"]}')
+
+                    # Running into a KeyError when attemping to insert these below
+                    # Will need assistance to finish these out.
+                    #analysisDataRawMetrics["numberOfPotentialDBCollectors"] = numberOfPotentialDBCollectors
+                    #analysisDataEvaluatedMetrics["numberOfPotentialDBCollectors"] = numberOfPotentialDBCollectors
 
                 # backendLimitNotHit
                 backendLimit = int(
