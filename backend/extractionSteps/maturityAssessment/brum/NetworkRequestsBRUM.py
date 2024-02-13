@@ -140,5 +140,6 @@ class NetworkRequestsBRUM(JobStepBase):
 
                 analysisDataEvaluatedMetrics["hasCustomEventServiceIncludeRule"] = len(application["ajaxConfig"]["eventServiceIncludeRules"]) > 0
                 analysisDataRawMetrics["numberOfCustomEventServiceIncludeRules"] = len(application["ajaxConfig"]["eventServiceIncludeRules"])
+                analysisDataRawMetrics["numberOfCustomEventServiceExcludeRules"] = len(application["ajaxConfig"]["eventServiceExcludeRules"])
 
                 self.applyThresholds(analysisDataEvaluatedMetrics, analysisDataRoot, jobStepThresholds)
