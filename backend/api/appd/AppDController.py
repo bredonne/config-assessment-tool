@@ -195,6 +195,10 @@ class AppdController(Consumer):
     def getPolicy(self, applicationID: Path, policyID: Path):
         """Retrieves Specific Policy"""
 
+    @params({"output": "json"})
+    @get("/controller/restui/pi/config/application/{applicationID}")
+    def getAnomalies(self, applicationID: Path):
+        """Retrieves Anomalies"""
 
     @params({"output": "json"})
     @get("/controller/restui/MidcUiService/getAllDataGathererConfigs/{applicationID}")

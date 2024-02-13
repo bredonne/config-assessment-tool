@@ -158,6 +158,20 @@
 				"NumberOfBasemonHealthRules":3
 			}
 		},
+		"AnomalyDetectionAPM": {
+			"platinum": {
+				"anomalyEnabled": true,
+				"bigPandaAction" : true
+			},
+			"gold": {
+				"anomalyEnabled": true,
+				"bigPandaAction" : false
+			},
+			"silver": {
+				"anomalyEnabled": false,
+				"bigPandaAction" : false
+			}
+		},
 		"DataCollectorsAPM": {
 			"platinum": {
 				"numberOfDataCollectorFieldsConfigured": 5,

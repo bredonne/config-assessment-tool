@@ -22,6 +22,7 @@ from extractionSteps.maturityAssessment.apm.DashboardsAPM import DashboardsAPM
 from extractionSteps.maturityAssessment.apm.DataCollectorsAPM import DataCollectorsAPM
 from extractionSteps.maturityAssessment.apm.ErrorConfigurationAPM import ErrorConfigurationAPM
 from extractionSteps.maturityAssessment.apm.HealthRulesAndAlertingAPM import HealthRulesAndAlertingAPM
+from extractionSteps.maturityAssessment.apm.AnomalyDetectionAPM import AnomalyDetectionAPM
 from extractionSteps.maturityAssessment.apm.MachineAgentsAPM import MachineAgentsAPM
 from extractionSteps.maturityAssessment.apm.OverallAssessmentAPM import OverallAssessmentAPM
 from extractionSteps.maturityAssessment.apm.OverallAssessmentAPM_WF import OverallAssessmentAPM_WF
@@ -178,6 +179,7 @@ class Engine:
             ServiceEndpointsAPM(),
             ErrorConfigurationAPM(),
             HealthRulesAndAlertingAPM(),
+            AnomalyDetectionAPM(),
             DataCollectorsAPM(),
             DashboardsAPM(),
             OverallAssessmentAPM(),

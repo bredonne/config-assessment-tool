@@ -457,6 +457,21 @@ class AppDService:
 
         return Result(policyData, None)
 
+    async def getAnomalies(self, applicationID: int) -> Result:
+        debugString = f"Gathering Anomalies for Application:{applicationID}"
+        # logging.debug(f"{self.host} - {debugString}")
+        response = await self.controller.getAnomalies(applicationID)
+        anomalies = await self.getResultFromResponse(response, debugString)
+
+        logging.debug(f"{self.host} - anomalies - {anomalies}")
+        # Result(data={'id': 0, 'version': 0, 'applicationId': 5945, 'name': 'DefaultMLApplicationConfig', 'enabled': False}, error=None)
+        logging.debug(f"{self.host} - applicationID - {applicationID}")
+        # 5709
+        logging.debug(f"{self.host} - anomalies.enabled - {anomalies.data['enabled']}")
+        # False
+
+        return anomalies;
+
     async def getSnapshotsWithDataCollector(
         self,
         applicationID: int,
