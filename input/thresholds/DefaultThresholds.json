@@ -140,22 +140,19 @@
 				"numberOfHealthRuleViolations": 10,
 				"numberOfActionsBoundToEnabledPolicies": 1,
 				"numberOfCustomHealthRules": 5,
-				"numberOfDefaultHealthRulesModified": 2,
-				"NumberOfBasemonHealthRules":3
+				"numberOfDefaultHealthRulesModified": 2
 			},
 			"gold": {
 				"numberOfHealthRuleViolations": 20,
 				"numberOfActionsBoundToEnabledPolicies": 1,
 				"numberOfCustomHealthRules": 2,
-				"numberOfDefaultHealthRulesModified": 1,
-				"NumberOfBasemonHealthRules":3
+				"numberOfDefaultHealthRulesModified": 1
 			},
 			"silver": {
 				"numberOfHealthRuleViolations": 50,
 				"numberOfActionsBoundToEnabledPolicies": 0,
 				"numberOfCustomHealthRules": 0,
-				"numberOfDefaultHealthRulesModified": 0,
-				"NumberOfBasemonHealthRules":3
+				"numberOfDefaultHealthRulesModified": 0
 			}
 		},
 		"AnomalyDetectionAPM": {

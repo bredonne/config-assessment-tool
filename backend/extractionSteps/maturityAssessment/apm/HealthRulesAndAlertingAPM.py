@@ -117,7 +117,7 @@ class HealthRulesAndAlertingAPM(JobStepBase):
                             except (KeyError, TypeError, IndexError):
                                 print("Couldn't find a match for the key:")
 
-                analysisDataEvaluatedMetrics["NumberOfBasemonHealthRules"] = NumberOfBasemonHealthRules
+                #analysisDataEvaluatedMetrics["NumberOfBasemonHealthRules"] = NumberOfBasemonHealthRules
                 analysisDataRawMetrics["NumberOfBasemonHealthRules"] = NumberOfBasemonHealthRules
                 analysisDataRawMetrics["NumberOfBasemonHealthRulesWithPolicy"] = NumberOfBasemonHealthRulesWithPolicy
                 analysisDataRawMetrics["NumberOfBasemonHealthRulesWithPandaAction"] = NumberOfBasemonHealthRulesWithPandaAction
