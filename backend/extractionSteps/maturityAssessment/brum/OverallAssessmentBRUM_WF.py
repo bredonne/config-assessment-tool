@@ -52,10 +52,69 @@ class OverallAssessmentBRUM_WF(JobStepBase):
 
 
                 NetworkRequestsBRUM_RAW = application["NetworkRequestsBRUM"]["raw"]
+
+                #Generate scorecard pass/fail for session timeoout.
                 sessionTimeoutMin = 0
                 if "sessionTimeoutMin" in NetworkRequestsBRUM_RAW:
                     sessionTimeoutMin = NetworkRequestsBRUM_RAW["sessionTimeoutMin"]
+                if sessionTimeoutMin != 5:
+                    analysisDataEvaluatedMetrics["sessionTimeout"] = 0
+                else:
+                    analysisDataEvaluatedMetrics["sessionTimeout"] = 1
 
-                analysisDataEvaluatedMetrics["sessionTimeoutMin"] = sessionTimeoutMin
+                # Generate scorecard pass/fail for custom BRUM include rules.
+                numberOfCustomURLRules = 0
+                analysisDataEvaluatedMetrics["numberOfCustomURLRules"] = 0
+                if "numberOfCustomURLIncludeRules" in NetworkRequestsBRUM_RAW and "numberOfCustomURLExcludeRules" in NetworkRequestsBRUM_RAW:
+                    if (NetworkRequestsBRUM_RAW["numberOfCustomURLIncludeRules"] + NetworkRequestsBRUM_RAW["numberOfCustomURLExcludeRules"]) > 0:
+                        analysisDataEvaluatedMetrics["numberOfCustomURLRules"] = 1
+
+                numberOfCustomAJAXRules = 0
+                analysisDataEvaluatedMetrics["numberOfCustomAJAXRules"] = 0
+                if "numberOfCustomAJAXIncludeRules" in NetworkRequestsBRUM_RAW and "numberOfCustomAJAXExcludeRules" in NetworkRequestsBRUM_RAW:
+                    if (NetworkRequestsBRUM_RAW["numberOfCustomAJAXIncludeRules"] + NetworkRequestsBRUM_RAW["numberOfCustomAJAXExcludeRules"]) > 1:
+                        analysisDataEvaluatedMetrics["numberOfCustomAJAXRules"] = 1
+
+                numberOfCustomAJAXEventRules = 0
+                analysisDataEvaluatedMetrics["numberOfCustomAJAXEventRules"] = 0
+                if "numberOfCustomAJAXEventIncludeRules" in NetworkRequestsBRUM_RAW and "numberOfCustomAJAXEventExcludeRules" in NetworkRequestsBRUM_RAW:
+                    if (NetworkRequestsBRUM_RAW["numberOfCustomAJAXEventIncludeRules"] + NetworkRequestsBRUM_RAW["numberOfCustomAJAXEventExcludeRules"]) > 0:
+                        analysisDataEvaluatedMetrics["numberOfCustomAJAXEventRules"] = 1
+
+                numberOfCustomPageRules = 0
+                analysisDataEvaluatedMetrics["numberOfCustomPageRules"] = 0
+                if "numberOfCustomPageIncludeRules" in NetworkRequestsBRUM_RAW and "numberOfCustomPageExcludeRules" in NetworkRequestsBRUM_RAW:
+                    if (NetworkRequestsBRUM_RAW["numberOfCustomPageIncludeRules"] + NetworkRequestsBRUM_RAW["numberOfCustomPageExcludeRules"]) > 1:
+                        analysisDataEvaluatedMetrics["numberOfCustomPageRules"] = 1
+
+                numberOfCustomVirtualPageRules = 0
+                analysisDataEvaluatedMetrics["numberOfCustomVirtualPageRules"] = 0
+                if "numberOfCustomVirtualIncludeRules" in NetworkRequestsBRUM_RAW and "numberOfCustomVirtualExcludeRules" in NetworkRequestsBRUM_RAW:
+                    if (NetworkRequestsBRUM_RAW["numberOfCustomVirtualIncludeRules"] + NetworkRequestsBRUM_RAW["numberOfCustomVirtualExcludeRules"]) > 1:
+                        analysisDataEvaluatedMetrics["numberOfCustomVirtualPageRules"] = 1
+
+                # Generate scorecard pass/fail for any include rules.
+                nonDefaultIncludeRule = 0
+                if "nonDefaultIncludeRule" in NetworkRequestsBRUM_RAW:
+                    nonDefaultIncludeRule = NetworkRequestsBRUM_RAW["nonDefaultIncludeRule"]
+                if nonDefaultIncludeRule == 0:
+                    analysisDataEvaluatedMetrics["nonDefaultIncludeRule"] = 0
+                else:
+                    analysisDataEvaluatedMetrics["nonDefaultIncludeRule"] = 1
+
+                #Generate scorecared pass/fail for non-default thresholds
+                if NetworkRequestsBRUM_RAW["thresholdModified"]:
+                    analysisDataEvaluatedMetrics["thresholdModified"] = 1
+                else:
+                    analysisDataEvaluatedMetrics["thresholdModified"] = 0
+
+                # WellsFargo HealthRuleScore check
+                HealthRulesAndAlertingBRUM_RAW = application["HealthRulesAndAlertingBRUM"]["raw"]
+
+                analysisDataEvaluatedMetrics["HealthRuleScore"] = 0
+                if HealthRulesAndAlertingBRUM_RAW['NumberOfHealthRules'] == 0 and HealthRulesAndAlertingBRUM_RAW["NumberOfActivePoliciesWithBigPandaAction"] == 0:
+                    analysisDataEvaluatedMetrics["HealthRuleScore"] = 0
+                if HealthRulesAndAlertingBRUM_RAW['NumberOfHealthRules'] > 0 and HealthRulesAndAlertingBRUM_RAW["NumberOfHealthRulesWithPandaAction"] > 0:
+                    analysisDataEvaluatedMetrics["HealthRuleScore"] = 1
 
                 self.applyThresholds(analysisDataEvaluatedMetrics, analysisDataRoot, jobStepThresholds)

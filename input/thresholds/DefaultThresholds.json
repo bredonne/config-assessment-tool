@@ -242,28 +242,37 @@
 		},
 		"OverallAssessmentAPM_WF": {
 			"platinum": {
-				"BASEMONHealthRuleScore": 3,
-				"BackendScore": 3,
-				"BTScore": 3,
-				"DashboardScore" : 3,
-				"MIDCScore" : 3,
-				"JMXScore" : 3
-			},
-			"gold": {
-				"BASEMONHealthRuleScore" : 2,
-				"BackendScore": 2,
-				"BTScore": 2,
-				"DashboardScore" : 2,
-				"MIDCScore" : 2,
-				"JMXScore" : 2
-			},
-			"silver": {
 				"BASEMONHealthRuleScore": 1,
 				"BackendScore": 1,
+				"DBCollectorScore": 1,
 				"BTScore": 1,
 				"DashboardScore" : 1,
 				"MIDCScore" : 1,
-				"JMXScore" : 1
+				"ErrorDetectScore" : 1,
+				"JMXScore" : 1,
+				"AnomalyDetection": 1
+			},
+			"gold": {
+				"BASEMONHealthRuleScore" : 0,
+				"BackendScore": 0,
+				"DBCollectorScore": 0,
+				"BTScore": 0,
+				"DashboardScore" : 0,
+				"MIDCScore" : 0,
+				"ErrorDetectScore" : 0,
+				"JMXScore" : 0,
+				"AnomalyDetection": 0
+			},
+			"silver": {
+				"BASEMONHealthRuleScore": 0,
+				"BackendScore": 0,
+				"DBCollectorScore": 0,
+				"BTScore": 0,
+				"DashboardScore" : 0,
+				"MIDCScore" : 0,
+				"ErrorDetectScore" : 0,
+				"JMXScore" : 0,
+				"AnomalyDetection": 0
 			}
 		}
 	},
@@ -327,13 +336,37 @@
 		},
 		"OverallAssessmentBRUM_WF": {
 			"platinum": {
-				"sessionTimeoutMin": 5
+				"HealthRuleScore" : 1,
+				"sessionTimeout": 1,
+				"numberOfCustomURLRules": 1,
+				"numberOfCustomAJAXRules": 1,
+				"numberOfCustomAJAXEventRules": 1,
+				"numberOfCustomPageRules": 1,
+				"numberOfCustomVirtualPageRules": 1,
+				"nonDefaultIncludeRule": 1,
+				"thresholdModified": 1
 			},
 			"gold": {
-				"sessionTimeoutMin": 5
+				"HealthRuleScore" : 0,
+				"sessionTimeout": 0,
+				"numberOfCustomURLRules": 0,
+				"numberOfCustomAJAXRules": 0,
+				"numberOfCustomAJAXEventRules": 0,
+				"numberOfCustomPageRules": 0,
+				"numberOfCustomVirtualPageRules": 0,
+				"nonDefaultIncludeRule": 0,
+				"thresholdModified": 0
 			},
 			"silver": {
-				"sessionTimeoutMin": 5
+				"HealthRuleScore" : 0,
+				"sessionTimeout": 0,
+				"numberOfCustomURLRules": 0,
+				"numberOfCustomAJAXRules": 0,
+				"numberOfCustomAJAXEventRules": 0,
+				"numberOfCustomPageRules": 0,
+				"numberOfCustomVirtualPageRules": 0,
+				"nonDefaultIncludeRule": 0,
+				"thresholdModified": 0
 			}
 		}
 	},

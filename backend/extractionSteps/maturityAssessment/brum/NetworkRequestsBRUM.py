@@ -110,12 +110,67 @@ class NetworkRequestsBRUM(JobStepBase):
                 if "sessionTimeoutMins" in application["settingsConfig"]["sessionsMonitor"]:
                     analysisDataRawMetrics["sessionTimeoutMin"] = application["settingsConfig"]["sessionsMonitor"]["sessionTimeoutMins"]
 
+                thresholdModified = False
+                if "STANDARD_DEVIATION" in application["settingsConfig"]["thresholds"]["slowThreshold"]["type"]:
+                    if application["settingsConfig"]["thresholds"]["slowThreshold"]["value"] != 3:
+                        thresholdModified = True
+                else:
+                    thresholdModified = True
+
+                if "STANDARD_DEVIATION" in application["settingsConfig"]["thresholds"]["verySlowThreshold"]["type"]:
+                    if application["settingsConfig"]["thresholds"]["verySlowThreshold"]["value"] != 4:
+                        thresholdModified = True
+                else:
+                    thresholdModified = True
+
+                if "STATIC_MS" in application["settingsConfig"]["thresholds"]["stallThreshold"]["type"]:
+                    if application["settingsConfig"]["thresholds"]["stallThreshold"]["value"] != 45000:
+                        thresholdModified = True
+
+                analysisDataRawMetrics["thresholdModified"] = thresholdModified
+
+
                 numberOfCustomPageIncludeRules = len(application["pagesAndFramesConfig"]["customNamingIncludeRules"])
                 numberOfCustomPageExcludeRules = len(application["pagesAndFramesConfig"]["customNamingExcludeRules"])
                 numberOfCustomAJAXIncludeRules = len(application["ajaxConfig"]["customNamingIncludeRules"])
                 numberOfCustomAJAXExcludeRules = len(application["ajaxConfig"]["customNamingExcludeRules"])
+                numberOfCustomAJAXEventIncludeRules = len(application["ajaxConfig"]["eventServiceIncludeRules"])
+                numberOfCustomAJAXEventExcludeRules = len(application["ajaxConfig"]["eventServiceExcludeRules"])
                 numberOfCustomVirtualIncludeRules = len(application["virtualPagesConfig"]["customNamingIncludeRules"])
                 numberOfCustomVirtualExcludeRules = len(application["virtualPagesConfig"]["customNamingExcludeRules"])
+                numberOfCustomURLIncludeRules = 0
+                numberOfCustomURLExcludeRules = 0
+
+                nonDefaultIncludeRule = 0
+                nonDefaultExcludeRule = 0
+                try:
+                    for rule in application["pagesAndFramesConfig"]["customNamingIncludeRules"]:
+                        if not rule["isDefault"]:
+                            nonDefaultIncludeRule += 1
+                            if rule["matchOnURL"] is not None:
+                                numberOfCustomURLIncludeRules += 1
+                    for rule in application["pagesAndFramesConfig"]["customNamingExcludeRules"]:
+                        if rule["matchOnURL"] is not None:
+                            numberOfCustomURLExcludeRules += 1
+                    for rule in application["ajaxConfig"]["customNamingIncludeRules"]:
+                        if not rule["isDefault"]:
+                            nonDefaultIncludeRule += 1
+                            if rule["matchOnURL"] is not None:
+                                numberOfCustomURLIncludeRules += 1
+                    for rule in application["ajaxConfig"]["customNamingExcludeRules"]:
+                        if rule["matchOnURL"] is not None:
+                            numberOfCustomURLExcludeRules += 1
+                    for rule in application["virtualPagesConfig"]["customNamingIncludeRules"]:
+                        if not rule["isDefault"]:
+                            nonDefaultIncludeRule += 1
+                            if rule["matchOnURL"] is not None:
+                                numberOfCustomURLIncludeRules += 1
+                    for rule in application["virtualPagesConfig"]["customNamingExcludeRules"]:
+                        if rule["matchOnURL"] is not None:
+                            numberOfCustomURLExcludeRules += 1
+                except (KeyError, TypeError, IndexError):
+                    print("Couldn't find a match for the key in application")
+
 
                 analysisDataEvaluatedMetrics["numberCustomMatchRules"] = (
                     numberOfCustomPageIncludeRules
@@ -129,8 +184,14 @@ class NetworkRequestsBRUM(JobStepBase):
                 analysisDataRawMetrics["numberOfCustomPageExcludeRules"] = numberOfCustomPageExcludeRules
                 analysisDataRawMetrics["numberOfCustomAJAXIncludeRules"] = numberOfCustomAJAXIncludeRules
                 analysisDataRawMetrics["numberOfCustomAJAXExcludeRules"] = numberOfCustomAJAXExcludeRules
+                analysisDataRawMetrics["numberOfCustomAJAXEventIncludeRules"] = numberOfCustomAJAXEventIncludeRules
+                analysisDataRawMetrics["numberOfCustomAJAXEventExcludeRules"] = numberOfCustomAJAXEventExcludeRules
                 analysisDataRawMetrics["numberOfCustomVirtualIncludeRules"] = numberOfCustomVirtualIncludeRules
                 analysisDataRawMetrics["numberOfCustomVirtualExcludeRules"] = numberOfCustomVirtualExcludeRules
+                analysisDataRawMetrics["numberOfCustomURLIncludeRules"] = numberOfCustomURLIncludeRules
+                analysisDataRawMetrics["numberOfCustomURLExcludeRules"] = numberOfCustomURLExcludeRules
+                analysisDataRawMetrics["nonDefaultIncludeRule"] = nonDefaultIncludeRule
+                analysisDataRawMetrics["nonDefaultExcludeRule"] = nonDefaultExcludeRule
 
                 numBrowserSnapshotsWithServerSnapshots = 0
                 if application["browserSnapshotsWithServerSnapshots"].get("snapshots"):

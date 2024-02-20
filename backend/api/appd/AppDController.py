@@ -225,10 +225,15 @@ class AppdController(Consumer):
     def getDashboard(self, dashboardId: Query("dashboardId")):
         """Retrieves a single Dashboard"""
 
-    # @params({"output": "json"})
-    # @get("/controller/restui/report/list")
-    # def getAllReportsMetadata(self):
-    #     """Retrieves all Reports"""
+    @params({"output": "json"})
+    @headers(
+        {
+            "Accept": "application/json, text/plain, */*",
+        }
+    )
+    @get("/controller/restui/report/list")
+    def getAllReportsMetadata(self):
+        """Retrieves all Reports"""
 
     @params({"output": "json"})
     @get("/controller/restui/userAdministrationUiService/users")

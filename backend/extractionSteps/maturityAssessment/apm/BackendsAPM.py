@@ -83,22 +83,22 @@ class BackendsAPM(JobStepBase):
                     except KeyError:
                         backend["callsPerMinute"] = 0
                         logging.debug(f'{hostInfo["controller"].host} - Node: {backend["name"]} returned no metric data for Agent Availability.')               
-                """
+
                 numberOfPotentialDBCollectors = 0
                 for potentialDBCollector in backendsDBCollectors[idx].data["data"]:
                     try:
                         # Correct/more efficient method would be to cross reference the ids from backendsDBCollectors + backends and grab the Vendor value from backends to check for oracle or mssql
                         databases = ["oracle", "mssql"]
                         if any([x in potentialDBCollector["name"].lower() for x in databases]) or "ADO.NET" in potentialDBCollector["exitPointSubtype"]:
-                            print('Found Oracle or MS SQL!')
+                            ##print('Found Oracle or MS SQL!')
                             if "UNMAPPED" in potentialDBCollector["dbBackendStatus"]:
-                                print(f'Needs DB Collector!')
+                                ##print(f'Needs DB Collector!')
                                 numberOfPotentialDBCollectors += 1
-                                print(numberOfPotentialDBCollectors)
+                                ##print(numberOfPotentialDBCollectors)
                         hostInfo[self.componentType][application]["numberOfPotentialDBCollectors"] = numberOfPotentialDBCollectors
                     except KeyError:
                         logging.debug(f'{hostInfo["controller"].host} - Node: {backend["name"]} returned no backend.')
-                """
+
 
     def analyze(self, controllerData, thresholds):
         """
@@ -146,18 +146,17 @@ class BackendsAPM(JobStepBase):
                         # Correct/more efficient method would be to cross reference the ids from backendsDBCollectors + backends and grab the Vendor value from backends to check for oracle or mssql
                         databases = ["oracle", "mssql"]
                         if any([x in potentialDBCollector["name"].lower() for x in databases]) or "ADO.NET" in potentialDBCollector["exitPointSubtype"]:
-                            #print('Found Oracle or MS SQL!')
+                            logging.debug(f'{hostInfo["controller"].host} - Node: {backend["name"]}')
+                            ## print('Found Oracle or MS SQL!')
                             if "UNMAPPED" in potentialDBCollector["dbBackendStatus"]:
-                                #print(f'Needs DB Collector!')
+                                ## print(f'Needs DB Collector!')
                                 numberOfPotentialDBCollectors += 1
-                                #print(numberOfPotentialDBCollectors)
+                                ## print(numberOfPotentialDBCollectors)
                     except KeyError:
                         logging.debug(f'{hostInfo["controller"].host} - Node: {backend["name"]}')
 
-                    # Running into a KeyError when attemping to insert these below
-                    # Will need assistance to finish these out.
-                    #analysisDataRawMetrics["numberOfPotentialDBCollectors"] = numberOfPotentialDBCollectors
-                    #analysisDataEvaluatedMetrics["numberOfPotentialDBCollectors"] = numberOfPotentialDBCollectors
+                analysisDataRawMetrics["numberOfPotentialDBCollectors"] = numberOfPotentialDBCollectors
+                #analysisDataEvaluatedMetrics["numberOfPotentialDBCollectors"] = numberOfPotentialDBCollectors
 
                 # backendLimitNotHit
                 backendLimit = int(

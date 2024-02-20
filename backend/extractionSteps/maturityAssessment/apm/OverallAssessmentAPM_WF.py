@@ -71,24 +71,24 @@ class OverallAssessmentAPM_WF(JobStepBase):
                 analysisDataEvaluatedMetrics["BASEMONHealthRuleScore"] = 0
                 if HealthRulesAndAlertingAPM_RAW['NumberOfBasemonHealthRules'] == 0 and HealthRulesAndAlertingAPM_RAW["NumberOfActivePoliciesWithBigPandaAction"] == 0 and HealthRulesAndAlertingAPM_RAW["numberOfCustomHealthRules"] == 0:
                     analysisDataEvaluatedMetrics["BASEMONHealthRuleScore"] = 0
-                if 1 <= HealthRulesAndAlertingAPM_RAW['NumberOfBasemonHealthRules'] <= 7 and HealthRulesAndAlertingAPM_RAW["NumberOfBasemonHealthRulesWithPandaAction"] >= 1:
+                if HealthRulesAndAlertingAPM_RAW['NumberOfBasemonHealthRules'] >= 1 and HealthRulesAndAlertingAPM_RAW["NumberOfBasemonHealthRulesWithPandaAction"] >= 1 and HealthRulesAndAlertingAPM_RAW["numberOfCustomHealthRules"] >= 1:
                     analysisDataEvaluatedMetrics["BASEMONHealthRuleScore"] = 1
-                if HealthRulesAndAlertingAPM_RAW['NumberOfBasemonHealthRules'] >= 7 and HealthRulesAndAlertingAPM_RAW["numberOfCustomHealthRules"] >= 1:
-                    analysisDataEvaluatedMetrics["BASEMONHealthRuleScore"] = 2
-                if HealthRulesAndAlertingAPM_RAW['NumberOfBasemonHealthRules'] >= 7 and HealthRulesAndAlertingAPM_RAW["NumberOfBasemonHealthRulesWithPandaAction"] >= 1 and HealthRulesAndAlertingAPM_RAW["numberOfCustomHealthRules"] >= 1:
-                    analysisDataEvaluatedMetrics["BASEMONHealthRuleScore"] = 3
+                #if 1 <= HealthRulesAndAlertingAPM_RAW['NumberOfBasemonHealthRules'] <= 7 and HealthRulesAndAlertingAPM_RAW["NumberOfBasemonHealthRulesWithPandaAction"] >= 1:
+                #    analysisDataEvaluatedMetrics["BASEMONHealthRuleScore"] = 1
+                #if HealthRulesAndAlertingAPM_RAW['NumberOfBasemonHealthRules'] >= 7 and HealthRulesAndAlertingAPM_RAW["numberOfCustomHealthRules"] >= 1:
+                #    analysisDataEvaluatedMetrics["BASEMONHealthRuleScore"] = 2
 
                 # WellsFargo BTRuleScore check
                 BusinessTransactionsAPM_RAW = application["BusinessTransactionsAPM"]["raw"]
                 analysisDataEvaluatedMetrics["BTScore"] = 0
                 if BusinessTransactionsAPM_RAW["numberCustomMatchRules"] == 0 and not BusinessTransactionsAPM_RAW["btLockdownEnabled"] and not BusinessTransactionsAPM_RAW["numberOfRulesWithNonZeroPriority"] >> 0:
                     analysisDataEvaluatedMetrics["BTScore"] = 0
-                if BusinessTransactionsAPM_RAW["numberCustomMatchRules"] == 0 and BusinessTransactionsAPM_RAW["btLockdownEnabled"]:
+                if BusinessTransactionsAPM_RAW["btLockdownEnabled"] and (BusinessTransactionsAPM_RAW["numberCustomMatchRules"] > 0 or BusinessTransactionsAPM_RAW["numberOfRulesWithNonZeroPriority"] > 0) and BusinessTransactionsAPM_RAW["businessTransactionsWithLoad"] < 200:
                     analysisDataEvaluatedMetrics["BTScore"] = 1
-                if (BusinessTransactionsAPM_RAW["numberCustomMatchRules"] >> 0 or BusinessTransactionsAPM_RAW["btLockdownEnabled"]) and BusinessTransactionsAPM_RAW["numberOfRulesWithNonZeroPriority"] >> 0:
-                    analysisDataEvaluatedMetrics["BTScore"] = 2
-                if BusinessTransactionsAPM_RAW["btLockdownEnabled"] and (BusinessTransactionsAPM_RAW["numberCustomMatchRules"] >> 0 or BusinessTransactionsAPM_RAW["numberOfRulesWithNonZeroPriority"] >> 0) and BusinessTransactionsAPM_RAW["businessTransactionsWithLoad"] << 200:
-                    analysisDataEvaluatedMetrics["BTScore"] = 3
+                #if BusinessTransactionsAPM_RAW["numberCustomMatchRules"] == 0 and BusinessTransactionsAPM_RAW["btLockdownEnabled"]:
+                    #analysisDataEvaluatedMetrics["BTScore"] = 1
+                #if (BusinessTransactionsAPM_RAW["numberCustomMatchRules"] >> 0 or BusinessTransactionsAPM_RAW["btLockdownEnabled"]) and BusinessTransactionsAPM_RAW["numberOfRulesWithNonZeroPriority"] >> 0:
+                    #analysisDataEvaluatedMetrics["BTScore"] = 2
 
                 # WellsFargo Backend check
                 BackendsAPM_RAW = application["BackendsAPM"]["raw"]
@@ -96,12 +96,16 @@ class OverallAssessmentAPM_WF(JobStepBase):
                 analysisDataEvaluatedMetrics["BackendScore"] = 0
                 if BackendsAPM_RAW["numberOfModifiedDefaultBackendDiscoveryConfigs"] == 0 and BackendsAPM_RAW["numberOfCustomExitPoints"] == 0 and ServiceEndpointsAPM_RAW['numberOfCustomServiceEndpointRules'] == 0 :
                     analysisDataEvaluatedMetrics["BackendScore"] = 0
-                if (BackendsAPM_RAW["numberOfModifiedDefaultBackendDiscoveryConfigs"] >= 1 or BackendsAPM_RAW["numberOfCustomExitPoints"] >= 1)  and ServiceEndpointsAPM_RAW['numberOfCustomServiceEndpointRules'] >= 1 :
-                    analysisDataEvaluatedMetrics["BackendScore"] = 1
-                if (BackendsAPM_RAW["numberOfModifiedDefaultBackendDiscoveryConfigs"] >= 1 or BackendsAPM_RAW["numberOfCustomExitPoints"] >= 1) and ServiceEndpointsAPM_RAW['numberOfCustomServiceEndpointRules'] >= 1 and BackendsAPM_RAW["numberOfDBBackendsWithLoad"] >= 1:
-                    analysisDataEvaluatedMetrics["BackendScore"] = 2
                 if (BackendsAPM_RAW["numberOfModifiedDefaultBackendDiscoveryConfigs"] >= 1 or BackendsAPM_RAW["numberOfCustomExitPoints"] >= 1) and ServiceEndpointsAPM_RAW['numberOfCustomServiceEndpointRules'] >= 1 and BackendsAPM_RAW["numberOfDBBackendsWithLoad"] >= 1 and (HealthRulesAndAlertingAPM_RAW['numberOfBackendHealthRulesInPoliciesWithPandaAction'] >= 1 or HealthRulesAndAlertingAPM_RAW['numberOfSEHealthRulesInPoliciesWithPandaAction'] >= 1):
-                    analysisDataEvaluatedMetrics["BackendScore"] = 3
+                    analysisDataEvaluatedMetrics["BackendScore"] = 1
+                #if (BackendsAPM_RAW["numberOfModifiedDefaultBackendDiscoveryConfigs"] >= 1 or BackendsAPM_RAW["numberOfCustomExitPoints"] >= 1)  and ServiceEndpointsAPM_RAW['numberOfCustomServiceEndpointRules'] >= 1 :
+                #    analysisDataEvaluatedMetrics["BackendScore"] = 1
+                #if (BackendsAPM_RAW["numberOfModifiedDefaultBackendDiscoveryConfigs"] >= 1 or BackendsAPM_RAW["numberOfCustomExitPoints"] >= 1) and ServiceEndpointsAPM_RAW['numberOfCustomServiceEndpointRules'] >= 1 and BackendsAPM_RAW["numberOfDBBackendsWithLoad"] >= 1:
+                #    analysisDataEvaluatedMetrics["BackendScore"] = 2
+
+                analysisDataEvaluatedMetrics["DBCollectorScore"] = 0
+                if BackendsAPM_RAW["numberOfPotentialDBCollectors"] == 0:
+                    analysisDataEvaluatedMetrics["DBCollectorScore"] = 1
 
                 # WellsFargo JMX check
                 kafkaRule = False
@@ -123,24 +127,24 @@ class OverallAssessmentAPM_WF(JobStepBase):
 
                 if not kafkaRule and not log4j2Rule and not NIORule:
                     analysisDataEvaluatedMetrics["JMXScore"] = 0
-                if (not kafkaRule and not log4j2Rule and not NIORule) and JMXAPM_RAW["numberOfModifiedJMXConfigs"] >=1 :
-                    analysisDataEvaluatedMetrics["JMXScore"] = 1
-                if kafkaRule or log4j2Rule or NIORule:
-                    analysisDataEvaluatedMetrics["JMXScore"] = 2
                 if kafkaRule and log4j2Rule and NIORule:
-                    analysisDataEvaluatedMetrics["JMXScore"] = 3
+                    analysisDataEvaluatedMetrics["JMXScore"] = 1
+                #if (not kafkaRule and not log4j2Rule and not NIORule) and JMXAPM_RAW["numberOfModifiedJMXConfigs"] >=1 :
+                #    analysisDataEvaluatedMetrics["JMXScore"] = 1
+                #if kafkaRule or log4j2Rule or NIORule:
+                #    analysisDataEvaluatedMetrics["JMXScore"] = 2
 
                 #Dashboard Check
                 DashboardsAPM_RAW = application["DashboardsAPM"]["raw"]
                 analysisDataEvaluatedMetrics["DashboardScore"] = 0
                 if DashboardsAPM_RAW["numberOfDashboards"] == 0:
                     analysisDataEvaluatedMetrics["DashboardScore"] = 0
-                if DashboardsAPM_RAW["numberOfDashboards"] == 1:
-                    analysisDataEvaluatedMetrics["DashboardScore"] = 1
-                if DashboardsAPM_RAW["numberOfDashboards"] == 2:
-                    analysisDataEvaluatedMetrics["DashboardScore"] = 2
                 if DashboardsAPM_RAW["numberOfDashboards"] >= 3:
-                    analysisDataEvaluatedMetrics["DashboardScore"] = 3
+                    analysisDataEvaluatedMetrics["DashboardScore"] = 1
+                #if DashboardsAPM_RAW["numberOfDashboards"] == 1:
+                #    analysisDataEvaluatedMetrics["DashboardScore"] = 1
+                #if DashboardsAPM_RAW["numberOfDashboards"] == 2:
+                #    analysisDataEvaluatedMetrics["DashboardScore"] = 2
 
                 #MIDC Check
                 MIDCAPM_EVALUATED = application["DataCollectorsAPM"]["evaluated"]
@@ -148,6 +152,21 @@ class OverallAssessmentAPM_WF(JobStepBase):
                 if len(MIDCAPM_EVALUATED["numberOfDataCollectorFieldsConfigured"]) == 0:
                     analysisDataEvaluatedMetrics["MIDCScore"] = 0
                 if len(MIDCAPM_EVALUATED["numberOfDataCollectorFieldsConfigured"]) >= 3:
-                    analysisDataEvaluatedMetrics["MIDCScore"] = 3
+                    analysisDataEvaluatedMetrics["MIDCScore"] = 1
+
+                #Error Detection Check
+                ErrorConfigurationAPM_RAW = application["ErrorConfigurationAPM"]["raw"]
+                analysisDataEvaluatedMetrics["ErrorDetectScore"] = 0
+                if ErrorConfigurationAPM_RAW["numberOfCustomRules"] == 0:
+                    analysisDataEvaluatedMetrics["ErrorDetectScore"] = 0
+                if ErrorConfigurationAPM_RAW["numberOfCustomRules"] >= 1:
+                    analysisDataEvaluatedMetrics["ErrorDetectScore"] = 1
+
+                #Anomaly Detection Check
+                AnomalyDetectionAPM_RAW = application["AnomalyDetectionAPM"]["raw"]
+                analysisDataEvaluatedMetrics["AnomalyDetection"] = 0
+                if AnomalyDetectionAPM_RAW["anomalyEnabled"] and AnomalyDetectionAPM_RAW["bigPandaAction"]:
+                    analysisDataEvaluatedMetrics["AnomalyDetection"] = 1
+
 
                 self.applyThresholds(analysisDataEvaluatedMetrics, analysisDataRoot, jobStepThresholds)

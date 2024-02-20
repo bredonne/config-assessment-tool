@@ -99,14 +99,21 @@ class HealthRulesAndAlertingAPM(JobStepBase):
                         # Check if HR is specified in a policy.
                         for idx, policy in application["policies"].items():
                             try:
-                                if policy["enabled"] and policy["events"]["healthRuleEvents"] is not None and "healthRules" in policy["events"]["healthRuleEvents"]["healthRuleScope"]:  # Better type checking for when a policy does not act on HR's but other checkboxes
-                                    if policy["events"]["healthRuleEvents"]["healthRuleScope"]["healthRules"] is not None:
-                                        if healthrule in policy["events"]["healthRuleEvents"]["healthRuleScope"]["healthRules"]:
+                                if policy["enabled"] and policy["events"]["healthRuleEvents"] is not None:
+                                    if policy["events"]["healthRuleEvents"]["healthRuleScope"] is not None:
+                                        if "All_HEALTH_RULES" in policy["events"]["healthRuleEvents"]["healthRuleScope"]['healthRuleScopeType']:  # If policy has all HR's, it's a match.
                                             NumberOfBasemonHealthRulesWithPolicy += 1
                                             if "actions" in policy:  # Check for BigPanda Action
-                                                for action in policy["actions"]: 
+                                                for action in policy["actions"]:
                                                     if "BigPanda" in str(action["actionName"]):
                                                         NumberOfBasemonHealthRulesWithPandaAction += 1
+                                        if "healthRules" in policy["events"]["healthRuleEvents"]["healthRuleScope"]:  # If policy has individual HR's, check if this HR in that list.
+                                            if healthrule in policy["events"]["healthRuleEvents"]["healthRuleScope"]["healthRules"]:
+                                                NumberOfBasemonHealthRulesWithPolicy += 1
+                                                if "actions" in policy:  # Check for BigPanda Action
+                                                    for action in policy["actions"]:
+                                                        if "BigPanda" in str(action["actionName"]):
+                                                            NumberOfBasemonHealthRulesWithPandaAction += 1
                             except (KeyError, TypeError, IndexError):
                                 print("Couldn't find a match for the key:")
 
@@ -125,14 +132,22 @@ class HealthRulesAndAlertingAPM(JobStepBase):
                         # Check if HR is specified in a policy.
                         for idx, policy in application["policies"].items():
                             try:
-                                if policy["enabled"] and policy["events"]["healthRuleEvents"] is not None and "healthRules" in policy["events"]["healthRuleEvents"]["healthRuleScope"]:  # Better type checking for when a policy does not act on HR's but other checkboxes
-                                    if policy["events"]["healthRuleEvents"]["healthRuleScope"]["healthRules"] is not None:
-                                        if healthrule in policy["events"]["healthRuleEvents"]["healthRuleScope"]["healthRules"]:
+                                if policy["enabled"] and policy["events"]["healthRuleEvents"] is not None:
+                                    if policy["events"]["healthRuleEvents"]["healthRuleScope"] is not None:
+                                        if "All_HEALTH_RULES" in policy["events"]["healthRuleEvents"]["healthRuleScope"]['healthRuleScopeType']:  # If policy has all HR's, it's a match.
                                             SEHealthRulesWithPolicy += 1
-                                            if "actions" in policy:  #Check for BigPanda Action
+                                            if "actions" in policy:  # Check for BigPanda Action
                                                 for action in policy["actions"]:
                                                     if "BigPanda" in str(action["actionName"]):
                                                         SEHealthRulesWithPolicyPandaAction += 1
+                                        if "healthRules" in policy["events"]["healthRuleEvents"]["healthRuleScope"]:  # If policy has individual HR's, check if this HR in that list.
+                                            if healthrule in policy["events"]["healthRuleEvents"]["healthRuleScope"]["healthRules"]:
+                                                SEHealthRulesWithPolicy += 1
+                                                if "actions" in policy:  # Check for BigPanda Action
+                                                    for action in policy["actions"]:
+                                                        if "BigPanda" in str(action["actionName"]):
+                                                            SEHealthRulesWithPolicyPandaAction += 1
+
                             except (KeyError, TypeError, IndexError):
                                 print("Couldn't find a match for the key:")
 
@@ -151,18 +166,24 @@ class HealthRulesAndAlertingAPM(JobStepBase):
                         # Check if HR is specified in a policy.
                         for idx, policy in application["policies"].items():
                             try:
-                                if policy["enabled"] and policy["events"]["healthRuleEvents"] is not None and "healthRules" in policy["events"]["healthRuleEvents"]["healthRuleScope"]:  #Better type checking for when a policy does not act on HR's but other checkboxes
-                                    if policy["events"]["healthRuleEvents"]["healthRuleScope"]["healthRules"] is not None:
-                                        if healthrule in policy["events"]["healthRuleEvents"]["healthRuleScope"]["healthRules"]:
-                                            BackendHealthRulesWithPolicy += 1
-                                            if "actions" in policy:  #Check for BigPanda Action
+                                if policy["enabled"] and policy["events"]["healthRuleEvents"] is not None:
+                                    if policy["events"]["healthRuleEvents"]["healthRuleScope"] is not None:
+                                        if "All_HEALTH_RULES" in policy["events"]["healthRuleEvents"]["healthRuleScope"]['healthRuleScopeType']:  #If policy has all HR's, it's a match.
+                                            NumberOfBasemonHealthRulesWithPolicy += 1
+                                            if "actions" in policy:  # Check for BigPanda Action
                                                 for action in policy["actions"]:
                                                     if "BigPanda" in str(action["actionName"]):
-                                                        BackendHealthRulesWithPolicyPandaAction += 1
+                                                        NumberOfBasemonHealthRulesWithPandaAction += 1
+                                        if "healthRules" in policy["events"]["healthRuleEvents"]["healthRuleScope"]:  # If policy has individual HR's, check if this HR in that list.
+                                            if healthrule in policy["events"]["healthRuleEvents"]["healthRuleScope"]["healthRules"]:
+                                                BackendHealthRulesWithPolicy += 1
+                                                if "actions" in policy:  # Check for BigPanda Action
+                                                    for action in policy["actions"]:
+                                                        if "BigPanda" in str(action["actionName"]):
+                                                            BackendHealthRulesWithPolicyPandaAction += 1
                             except (KeyError, TypeError, IndexError):
                                 print("Couldn't find a match for the key:")
 
-                #analysisDataEvaluatedMetrics["numberOfBackendHealthRulesInPoliciesWithPandaAction"] = BackendHealthRulesWithPolicyPandaAction
                 analysisDataRawMetrics["numberOfBackendHealthRules"] = BackendHealthRules
                 analysisDataRawMetrics["numberOfBackendHealthRulesInPolicies"] = BackendHealthRulesWithPolicy
                 analysisDataRawMetrics["numberOfBackendHealthRulesInPoliciesWithPandaAction"] =BackendHealthRulesWithPolicyPandaAction

@@ -104,7 +104,54 @@ class HealthRulesAndAlertingBRUM(JobStepBase):
 
                 analysisDataRawMetrics["totalWarningPolicyViolations"] = policyEventCounts["warning"]
                 analysisDataRawMetrics["totalCriticalPolicyViolations"] = policyEventCounts["critical"]
-                analysisDataRawMetrics["numberOfHealthRules"] = len(application["healthRules"])
+                analysisDataRawMetrics["numberOfCustomHealthRules"] = len(application["healthRules"])
                 analysisDataRawMetrics["numberOfPolicies"] = len(application["policies"])
+
+                # Check for HealthRules having APPD_BASEMON in the name.
+                NumberOfHealthRules = 0
+                NumberOfHealthRulesWithPolicy = 0
+                NumberOfHealthRulesWithPandaAction = 0
+                for healthrule, healthruleinfo in application["healthRules"].items():
+                    NumberOfHealthRules += 1
+                    # Check if HR is specified in a policy.
+                    for idx, policy in application["policies"].items():
+                        try:
+                            if policy["enabled"] and policy["events"]["healthRuleEvents"] is not None:
+                                if policy["events"]["healthRuleEvents"]["healthRuleScope"] is not None:
+                                    if "All_HEALTH_RULES" in policy["events"]["healthRuleEvents"]["healthRuleScope"]['healthRuleScopeType']:
+                                        NumberOfHealthRulesWithPolicy += 1
+                                        if "actions" in policy:  # Check for BigPanda Action
+                                            for action in policy["actions"]:
+                                                if "BigPanda" in str(action["actionName"]):
+                                                    NumberOfHealthRulesWithPandaAction += 1
+                                    if "healthRules" in policy["events"]["healthRuleEvents"]["healthRuleScope"]:  # Better type checking for when a policy does not act on HR's but other checkboxes
+                                        if healthrule in policy["events"]["healthRuleEvents"]["healthRuleScope"]["healthRules"]:
+                                            NumberOfHealthRulesWithPolicy += 1
+                                            if "actions" in policy:  # Check for BigPanda Action
+                                                for action in policy["actions"]:
+                                                    if "BigPanda" in str(action["actionName"]):
+                                                        NumberOfHealthRulesWithPandaAction += 1
+                        except (KeyError, TypeError, IndexError):
+                            print("Couldn't find a match for the key:")
+
+                analysisDataRawMetrics["NumberOfHealthRules"] = NumberOfHealthRules
+                analysisDataRawMetrics["NumberOfHealthRulesWithPolicy"] = NumberOfHealthRulesWithPolicy
+                analysisDataRawMetrics["NumberOfHealthRulesWithPandaAction"] = NumberOfHealthRulesWithPandaAction
+
+                # Number of active policies going to BigPanda
+                NumberOfActivePolicies = 0
+                NumberOfActivePoliciesWithBigPandaAction = 0
+                for idx, policy in application["policies"].items():
+                    if policy["enabled"]:
+                        NumberOfActivePolicies += 1
+                        if "actions" in policy:
+                            for action in policy["actions"]:
+                                if "BigPanda" in str(action["actionName"]):
+                                    NumberOfActivePoliciesWithBigPandaAction += 1
+                        else:
+                            logging.warning(f"Policy {policy['name']} is enabled but has no actions bound to it.")
+
+                analysisDataRawMetrics["NumberOfActivePoliciesWithBigPandaAction"] = NumberOfActivePoliciesWithBigPandaAction
+                analysisDataRawMetrics["numberOfHealthRules"] = len(application["healthRules"])
 
                 self.applyThresholds(analysisDataEvaluatedMetrics, analysisDataRoot, jobStepThresholds)

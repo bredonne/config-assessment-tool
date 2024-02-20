@@ -625,13 +625,12 @@ class AppDService:
 
         return Result(returnedDashboards, None)
 
-    # async def getReports(self) -> Result:
-        # debugString = f"Gathering Reports"
-        # logging.debug(f"{self.host} - {debugString}")
-        # response = await self.controller.getAllReportsMetadata()
-        # logging.info(f'{response} DEBUG_LINE_REPORT_RESPONSE')
-        # allReportsMetadata = await self.getResultFromResponse(response, debugString)
-        # return await self.getResultFromResponse(response, debugString)
+    async def getReports(self) -> Result:
+        debugString = f"Gathering Reports"
+        logging.debug(f"{self.host} - {debugString}")
+        response = await self.controller.getAllReportsMetadata()
+        #allReportsMetadata = await self.getResultFromResponse(response, debugString)
+        return await self.getResultFromResponse(response, debugString)
 
     async def getUserPermissions(self, username: str) -> Result:
         debugString = f"Gathering Permission set for user: {username}"
@@ -845,22 +844,25 @@ class AppDService:
         machineIdMap = {}
         for serverResult, serverAvailabilityResult in zip(serversResults, serversAvailabilityResults):
             machine = serverResult.data
-            value = get_recursively(serverAvailabilityResult.data["data"], "value")
-            if value:
-                availability = next(iter(value))
-                machine["availability"] = availability
-            else:
-                machine["availability"] = 0
+            try:
+                value = get_recursively(serverAvailabilityResult.data["data"], "value")
+                if value:
+                    availability = next(iter(value))
+                    machine["availability"] = availability
+                else:
+                    machine["availability"] = 0
 
-            physicalCores = 0
-            virtualCores = 0
-            for cpu in machine.get("cpus", []):
-                physicalCores += cpu.get("coreCount", 0)
-                virtualCores += cpu.get("logicalCount", 0)
-            machine["physicalCores"] = physicalCores
-            machine["virtualCores"] = virtualCores
+                physicalCores = 0
+                virtualCores = 0
+                for cpu in machine.get("cpus", []):
+                    physicalCores += cpu.get("coreCount", 0)
+                    virtualCores += cpu.get("logicalCount", 0)
+                machine["physicalCores"] = physicalCores
+                machine["virtualCores"] = virtualCores
 
-            machineIdMap[machine["hostId"]] = machine
+                machineIdMap[machine["hostId"]] = machine
+            except (KeyError, TypeError, IndexError):
+                print("Couldn't find a match for the key:")
 
         return Result(machineIdMap, None)
 
