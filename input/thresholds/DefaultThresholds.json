@@ -208,6 +208,75 @@
 				"percentageTotalGoldOrBetter": 0,
 				"percentageTotalSilverOrBetter": 80
 			}
+		},
+		"JMXAPM": {
+			"platinum": {
+				"numberOfJMXConfigs": 13,
+				"numberOfModifiedJMXConfigs": 3
+			},
+			"gold": {
+				"numberOfJMXConfigs": 12,
+				"numberOfModifiedJMXConfigs": 2
+			},
+			"silver": {
+				"numberOfJMXConfigs": 11,
+				"numberOfModifiedJMXConfigs": 1
+			}
+		},
+		"AnomalyDetectionAPM": {
+			"platinum": {
+				"anomalyEnabled": true,
+				"bigPandaAction" : true
+			},
+			"gold": {
+				"anomalyEnabled": true,
+				"bigPandaAction" : false
+			},
+			"silver": {
+				"anomalyEnabled": false,
+				"bigPandaAction" : false
+			}
+		},
+		"OverallAssessmentAPM_WF": {
+			"platinum": {
+				"AnalyticsScore": 1,
+				"BASEMONHealthRuleScore": 1,
+				"BackendScore": 1,
+				"DBCollectorScore": 1,
+				"BTScore": 1,
+				"DashboardScore": 1,
+				"DashboardReportScore": 1,
+				"MIDCScore" : 1,
+				"ErrorDetectScore" : 1,
+				"JMXScore" : 1,
+				"AnomalyDetectionScore": 1
+			},
+			"gold": {
+				"AnalyticsScore": 0,
+				"BASEMONHealthRuleScore" : 0,
+				"BackendScore": 0,
+				"DBCollectorScore": 0,
+				"BTScore": 0,
+				"DashboardScore": 0,
+				"DashboardReportScore": 0,
+				"MIDCScore" : 0,
+				"ErrorDetectScore" : 0,
+				"JMXScore" : 0,
+				"AnomalyDetectionScore": 0
+			},
+			"silver": {
+				"AnalyticsScore": 0,
+				"BASEMONHealthRuleScore": 0,
+				"BackendScore": 0,
+				"DBCollectorScore": 0,
+				"BTScore": 0,
+				"DashboardScore": 0,
+				"DashboardReportScore": 0,
+				"MIDCScore" : 0,
+				"ErrorDetectScore" : 0,
+				"JMXScore" : 0,
+				"AnomalyDetectionScore": 0
+			}
 		}
 	},
 	"brum": {
@@ -251,6 +320,23 @@
 				"numberOfCustomHealthRules": 0
 			}
 		},
+		"DashboardsBRUM": {
+			"platinum": {
+				"numberOfDashboards": 5,
+				"percentageOfDashboardsModifiedLast6Months": 100,
+				"numberOfDashboardsUsingBiQ": 1
+			},
+			"gold": {
+				"numberOfDashboards": 1,
+				"percentageOfDashboardsModifiedLast6Months": 10,
+				"numberOfDashboardsUsingBiQ": 0
+			},
+			"silver": {
+				"numberOfDashboards": 0,
+				"percentageOfDashboardsModifiedLast6Months": 0,
+				"numberOfDashboardsUsingBiQ": 0
+			}
+		},
 		"OverallAssessmentBRUM": {
 			"platinum": {
 				"percentageTotalPlatinum": 50,
@@ -266,6 +352,50 @@
 				"percentageTotalPlatinum": 0,
 				"percentageTotalGoldOrBetter": 0,
 				"percentageTotalSilverOrBetter": 80
+			}
+		},
+		"OverallAssessmentBRUM_WF": {
+			"platinum": {
+				"AnalyticsScore": 1,
+				"HealthRuleScore" : 1,
+				"sessionTimeout": 1,
+				"DashboardScore": 1,
+				"DashboardReportScore": 1,
+				"numberOfCustomURLRules": 1,
+				"numberOfCustomAJAXRules": 1,
+				"numberOfCustomAJAXEventRules": 1,
+				"numberOfCustomPageRules": 1,
+				"numberOfCustomVirtualPageRules": 1,
+				"nonDefaultIncludeRule": 1,
+				"thresholdModified": 1
+			},
+			"gold": {
+				"AnalyticsScore": 0,
+				"HealthRuleScore" : 0,
+				"sessionTimeout": 0,
+				"DashboardScore": 0,
+				"DashboardReportScore": 0,
+				"numberOfCustomURLRules": 0,
+				"numberOfCustomAJAXRules": 0,
+				"numberOfCustomAJAXEventRules": 0,
+				"numberOfCustomPageRules": 0,
+				"numberOfCustomVirtualPageRules": 0,
+				"nonDefaultIncludeRule": 0,
+				"thresholdModified": 0
+			},
+			"silver": {
+				"AnalyticsScore": 0,
+				"HealthRuleScore" : 0,
+				"sessionTimeout": 0,
+				"DashboardScore": 0,
+				"DashboardReportScore": 0,
+				"numberOfCustomURLRules": 0,
+				"numberOfCustomAJAXRules": 0,
+				"numberOfCustomAJAXEventRules": 0,
+				"numberOfCustomPageRules": 0,
+				"numberOfCustomVirtualPageRules": 0,
+				"nonDefaultIncludeRule": 0,
+				"thresholdModified": 0
 			}
 		}
 	},
