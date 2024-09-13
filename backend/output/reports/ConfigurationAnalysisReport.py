@@ -154,6 +154,14 @@ class ConfigurationAnalysisReport(PostProcessReport):
         if (appFrame['numberOfCustomBackendRules'] == 0).any():
             taskList[2].append('No Custom Backend Rules')
 
+    def JMXStatus(self, application, taskList):
+        frame = pd.read_excel(self.analysis_sheet, sheet_name='JMXAPM', engine='openpyxl')
+        frame.drop('controller', axis=1)
+        appFrame = frame.loc[frame['application'] == application]
+
+        if (appFrame['numberOfModifiedJMXConfigs'] == 0).any():
+            taskList[2].append('No Modified JMX Rules')
+
     def overheadStatus(self, application, taskList):
         frame = pd.read_excel(self.analysis_sheet, sheet_name='OverheadAPM', engine='openpyxl')
         frame.drop('controller', axis=1)
@@ -232,6 +240,7 @@ class ConfigurationAnalysisReport(PostProcessReport):
             else:
                 taskList[3].append('Only ' + str(int(appFrame['numberOfCustomHealthRules'])) + ' Custom Health Rules')
 
+
     def dataCollectorStatus(self, application, taskList):
         frame = pd.read_excel(self.analysis_sheet, sheet_name='DataCollectorsAPM', engine='openpyxl')
         frame.drop('controller', axis=1)
@@ -290,6 +299,7 @@ class ConfigurationAnalysisReport(PostProcessReport):
         self.machineAgentStatus(application, taskList)
         self.businessTranStatus(application, taskList)
         self.backendStatus(application, taskList)
+        self.JMXStatus(application, taskList)
         self.overheadStatus(application, taskList)
         self.serviceEndpointStatus(application, taskList)
         self.errorConfigurationStatus(application, taskList)

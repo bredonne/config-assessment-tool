@@ -16,11 +16,13 @@ from extractionSteps.general.CustomMetrics import CustomMetrics
 from extractionSteps.general.Synthetics import Synthetics
 from extractionSteps.maturityAssessment.apm.AppAgentsAPM import AppAgentsAPM
 from extractionSteps.maturityAssessment.apm.BackendsAPM import BackendsAPM
+from extractionSteps.maturityAssessment.apm.JMXAPM import JMXAPM
 from extractionSteps.maturityAssessment.apm.BusinessTransactionsAPM import BusinessTransactionsAPM
 from extractionSteps.maturityAssessment.apm.DashboardsAPM import DashboardsAPM
 from extractionSteps.maturityAssessment.apm.DataCollectorsAPM import DataCollectorsAPM
 from extractionSteps.maturityAssessment.apm.ErrorConfigurationAPM import ErrorConfigurationAPM
 from extractionSteps.maturityAssessment.apm.HealthRulesAndAlertingAPM import HealthRulesAndAlertingAPM
+from extractionSteps.maturityAssessment.apm.AnomalyDetectionAPM import AnomalyDetectionAPM
 from extractionSteps.maturityAssessment.apm.MachineAgentsAPM import MachineAgentsAPM
 from extractionSteps.maturityAssessment.apm.OverallAssessmentAPM import OverallAssessmentAPM
 from extractionSteps.maturityAssessment.apm.OverallAssessmentAPM_WF import OverallAssessmentAPM_WF
@@ -190,6 +192,7 @@ class Engine:
             HealthRulesAndAlertingBRUM(),
             DashboardsBRUM(),
             OverallAssessmentBRUM(),
+            OverallAssessmentBRUM_WF(),
             # MRUM Report
             NetworkRequestsMRUM(),
             HealthRulesAndAlertingMRUM(),
@@ -377,7 +380,7 @@ class Engine:
             )
 
         createCxPpt(self.jobFileName)
-        createCxHamUseCasePpt(self.jobFileName)
+#        createCxHamUseCasePpt(self.jobFileName)   //Removing call since it causes errors on CAT run.
 
         logging.info(f"----------Complete----------")
         # if controllerData.json file exists, delete it
