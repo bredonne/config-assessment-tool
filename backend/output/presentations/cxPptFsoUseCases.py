@@ -536,10 +536,10 @@ def createCxHamUseCasePpt(folder: str):
                              f"{file_prefix}-MaturityAssessmentRaw-apm.xlsx",
                              f"{file_prefix}-MaturityAssessmentRaw-brum.xlsx",
                              f"{file_prefix}-MaturityAssessmentRaw-mrum.xlsx",
-                             f"{file_prefix}-Synthetics.xlsx"
+                             #f"{file_prefix}-Synthetics.xlsx"
                          ))
 
-    assert len(excels.getWorkBooks()) == 11
+    assert len(excels.getWorkBooks()) == 10
 
     # currently only 1st controller in the job file is examined.
     controller = getValuesInColumn(apm_wb["Analysis"], "controller")[0]

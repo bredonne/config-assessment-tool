@@ -31,10 +31,12 @@ class BackendsAPM(JobStepBase):
             getAllCustomExitPointsFutures = []
             getBackendDiscoveryConfigsFutures = []
             backendCallsPerMinuteFutures = []
+            getBackendsDBCollectorFutures = []
             for application in hostInfo[self.componentType].values():
                 getBackendsFutures.append(controller.getBackends(application["id"]))
                 getAllCustomExitPointsFutures.append(controller.getAllCustomExitPoints(application["id"]))
                 getBackendDiscoveryConfigsFutures.append(controller.getBackendDiscoveryConfigs(application["id"]))
+                getBackendsDBCollectorFutures.append(controller.getApplicationDBCollectorStatus(application["id"]))
                 backendCallsPerMinuteFutures.append(
                     controller.getMetricData(
                         applicationID=application["id"],
@@ -48,6 +50,7 @@ class BackendsAPM(JobStepBase):
             allCustomExitPoints = await AsyncioUtils.gatherWithConcurrency(*getAllCustomExitPointsFutures)
             backendDiscoveryConfigs = await AsyncioUtils.gatherWithConcurrency(*getBackendDiscoveryConfigsFutures)
             backendCallsPerMinute = await AsyncioUtils.gatherWithConcurrency(*backendCallsPerMinuteFutures)
+            backendsDBCollectors = await AsyncioUtils.gatherWithConcurrency(*getBackendsDBCollectorFutures)
 
             # Create a dictionary of Node -> Calls Per Minute for fast lookup
             for rolledUpMetrics in backendCallsPerMinute:
@@ -70,6 +73,7 @@ class BackendsAPM(JobStepBase):
             # Append node level information to overall host info
             for idx, application in enumerate(hostInfo[self.componentType]):
                 hostInfo[self.componentType][application]["backends"] = backends[idx].data
+                hostInfo[self.componentType][application]["potentialDBCollectors"] = backendsDBCollectors[idx].data
                 hostInfo[self.componentType][application]["allCustomExitPoints"] = allCustomExitPoints[idx].data
                 hostInfo[self.componentType][application]["backendDiscoveryConfigs"] = backendDiscoveryConfigs[idx].data
                 for backend in backends[idx].data:
@@ -105,9 +109,12 @@ class BackendsAPM(JobStepBase):
 
                 # callsPerMinute
                 numberOfBackendsWithLoad = 0.0
+                numberOfDBBackendsWithLoad = 0
                 for backend in application["backends"]:
                     if backend["callsPerMinute"] > 0:
                         numberOfBackendsWithLoad += 1
+                    if "JDBC" in str(backend["exitPointType"]):
+                        numberOfDBBackendsWithLoad += 1
 
                 # percentBackendsWithLoad
                 if numberOfBackendsWithLoad != 0.0:
@@ -131,8 +138,28 @@ class BackendsAPM(JobStepBase):
                 numberOfCustomExitPoints = len(application["allCustomExitPoints"])
                 analysisDataEvaluatedMetrics["numberOfCustomBackendRules"] = numberOfModifiedDefaultBackendDiscoveryConfigs + numberOfCustomExitPoints
 
+                # UnMapped DB backends.
+                UnMappedDBBackends = 0
+                for potentialDBCollector in application["potentialDBCollectors"]:
+                    try:
+                        # Correct/more efficient method would be to cross reference the ids from backendsDBCollectors + backends and grab the Vendor value from backends to check for oracle or mssql
+                        databases = ["oracle", "mssql"]
+                        if any([x in potentialDBCollector["name"].lower() for x in databases]) or "ADO.NET" in potentialDBCollector["exitPointSubtype"]:
+                            logging.debug(f'{hostInfo["controller"].host} - Node: {backend["name"]}')
+                            print('Found Oracle or MS SQL!')
+                            if "UNMAPPED" in potentialDBCollector["dbBackendStatus"]:
+                                print(f'Needs DB Collector!')
+                                UnMappedDBBackends += 1
+
+                    except (KeyError, TypeError, IndexError):
+                        print("BackendsAPM...Couldn't find a match for the key in application")
+
+
+                analysisDataRawMetrics["UnMappedDBBackends"] = UnMappedDBBackends
+
                 analysisDataRawMetrics["numberOfBackends"] = len(application["backends"])
                 analysisDataRawMetrics["numberOfBackendsWithLoad"] = numberOfBackendsWithLoad
+                analysisDataRawMetrics["numberOfDBBackendsWithLoad"] = numberOfDBBackendsWithLoad
                 analysisDataRawMetrics["backendLimit"] = backendLimit
                 analysisDataRawMetrics["numberOfModifiedDefaultBackendDiscoveryConfigs"] = numberOfModifiedDefaultBackendDiscoveryConfigs
                 analysisDataRawMetrics["numberOfCustomExitPoints"] = numberOfCustomExitPoints

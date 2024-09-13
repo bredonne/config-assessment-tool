@@ -57,9 +57,19 @@ class AppdController(Consumer):
         """Retrieves Application Level Business Transaction Configurations"""
 
     @params({"output": "json"})
+    @get("/controller/restui/jmxConfiguration/getRuleCollectionsForApplication/{applicationID}")
+    def getJMXConfig(self, applicationID: Path):
+        """Retrieves Application Level JMX Configurations"""
+
+    @params({"output": "json"})
     @get("/controller/rest/applications/{applicationID}/backends")
     def getBackends(self, applicationID: Path):
         """Retrieves Backends"""
+
+    @params({"output": "json"})
+    @post("/controller/restui/backend/list/database")
+    def getApplicationDBCollectorStatus(self, body: Body):
+        """Retrieves db summary list from application and checks for dbBackendStatus"""
 
     @params({"output": "json"})
     @get("/controller/rest/configuration")
@@ -181,6 +191,16 @@ class AppdController(Consumer):
         """Retrieves Policies"""
 
     @params({"output": "json"})
+    @get("/controller/alerting/rest/v1/applications/{applicationID}/policies/{policyID}")
+    def getPolicy(self, applicationID: Path, policyID: Path):
+        """Retrieves Specific Policy"""
+
+    @params({"output": "json"})
+    @get("/controller/restui/pi/config/application/{applicationID}")
+    def getAnomalies(self, applicationID: Path):
+        """Retrieves Anomalies"""
+
+    @params({"output": "json"})
     @get("/controller/restui/MidcUiService/getAllDataGathererConfigs/{applicationID}")
     def getDataCollectors(self, applicationID: Path):
         """Retrieves Data Collectors"""
@@ -196,6 +216,21 @@ class AppdController(Consumer):
         """Retrieves Analytics Enabled Status for app Applications"""
 
     @params({"output": "json"})
+    @get("/controller/restui/analyticsSavedSearches/getAllAnalyticsSavedSearches")
+    def getAnalyticsSearches(self):
+        """Retrieves Analytics saved searches"""
+
+    @params({"output": "json"})
+    @headers(
+        {
+            "Accept": "application/json, text/plain, */*",
+        }
+    )
+    @get("/controller/restui/analyticsMetric/getAnalyticsScheduledQueryReports")
+    def getAnalyticsQueryReports(self):
+        """Retrieves Analytics Query metrics """
+
+    @params({"output": "json"})
     @get("/controller/restui/dashboards/getAllDashboardsByType/false")
     def getAllDashboardsMetadata(self):
         """Retrieves all Dashboards"""
@@ -204,6 +239,16 @@ class AppdController(Consumer):
     @get("/controller/CustomDashboardImportExportServlet")
     def getDashboard(self, dashboardId: Query("dashboardId")):
         """Retrieves a single Dashboard"""
+
+    @params({"output": "json"})
+    @headers(
+        {
+            "Accept": "application/json, text/plain, */*",
+        }
+    )
+    @get("/controller/restui/report/list")
+    def getAllReportsMetadata(self):
+        """Retrieves all Reports"""
 
     @params({"output": "json"})
     @get("/controller/restui/userAdministrationUiService/users")
@@ -303,6 +348,11 @@ class AppdController(Consumer):
     @params({"output": "json"})
     @get("/controller/restui/browserRUMConfig/getVirtualPagesConfig/{applicationId}")
     def getVirtualPagesConfig(self, applicationId: Path):
+        """Retrieves virtual pages config"""
+
+    @params({"output": "json"})
+    @get("/controller/restui/browserRUMConfig/getSettingsConfig/{applicationId}")
+    def getSettingsConfig(self, applicationId: Path):
         """Retrieves virtual pages config"""
 
     @params({"output": "json"})

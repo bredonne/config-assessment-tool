@@ -48,11 +48,14 @@ class HealthRulesAndAlertingAPM(JobStepBase):
                 application = hostInfo[self.componentType][applicationName]
 
                 application["eventCounts"] = eventCounts[idx].data
-                application["policies"] = policies[idx].data
 
                 trimmedHrs = [healthRule for healthRule in healthRules[idx].data if healthRule.error is None]
                 application["healthRules"] = {
                     healthRuleList.data["name"]: healthRuleList.data for healthRuleList in trimmedHrs if healthRuleList.error is None
+                }
+                trimmedPos = [policy for policy in policies[idx].data if policy.error is None]
+                application["policies"] = {
+                    policyList.data["name"]: policyList.data for policyList in trimmedPos if policyList.error is None
                 }
 
     def analyze(self, controllerData, thresholds):
@@ -85,6 +88,7 @@ class HealthRulesAndAlertingAPM(JobStepBase):
                 policyEventCounts = application["eventCounts"]["policyViolationEventCounts"]["totalPolicyViolations"]
                 analysisDataEvaluatedMetrics["numberOfHealthRuleViolations"] = policyEventCounts["warning"] + policyEventCounts["critical"]
 
+
                 # numberOfDefaultHealthRulesModified
                 defaultHealthRulesModified = 0
                 for hrName, heathRule in defaultHealthRules.items():
@@ -103,7 +107,7 @@ class HealthRulesAndAlertingAPM(JobStepBase):
 
                 # numberOfActionsBoundToEnabledPolicies
                 actionsInEnabledPolicies = set()
-                for policy in application["policies"]:
+                for idx, policy in application["policies"].items():
                     if policy["enabled"]:
                         if "actions" in policy:
                             for action in policy["actions"]:
@@ -114,6 +118,9 @@ class HealthRulesAndAlertingAPM(JobStepBase):
 
                 # numberOfCustomHealthRules
                 analysisDataEvaluatedMetrics["numberOfCustomHealthRules"] = len(
+                    set(application["healthRules"].keys()).symmetric_difference(defaultHealthRules.keys())
+                )
+                analysisDataRawMetrics["numberOfCustomHealthRules"] = len(
                     set(application["healthRules"].keys()).symmetric_difference(defaultHealthRules.keys())
                 )
 

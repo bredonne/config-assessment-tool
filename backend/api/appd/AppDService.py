@@ -171,6 +171,22 @@ class AppDService:
         response = await self.controller.getBackends(applicationID)
         return await self.getResultFromResponse(response, debugString)
 
+    async def getApplicationDBCollectorStatus(self, applicationId: int) -> Result:
+        debugString = f"Gathering List of Application DB Collector Status"
+        logging.debug(f"{self.host} - {debugString}")
+        body = {
+            "requestFilter": {"queryParams": {"applicationId": applicationId}, "filters": []},
+            "resultColumns": ["ID", "NAME", "TYPE"],
+            "offset": 0,
+            "limit": -1,
+            "searchFilters": [],
+            "columnSorts": [],
+            "timeRangeStart": self.startTime,
+            "timeRangeEnd": self.endTime,
+        }
+        response = await self.controller.getApplicationDBCollectorStatus(json.dumps(body))
+        return await self.getResultFromResponse(response, debugString)
+
     async def getConfigurations(self) -> Result:
         debugString = f"Gathering Controller Configurations"
         logging.debug(f"{self.host} - {debugString}")
@@ -315,6 +331,12 @@ class AppDService:
         response = await self.controller.getAppLevelBTConfig(applicationID)
         return await self.getResultFromResponse(response, debugString)
 
+    async def getJMXConfig(self, applicationID: int) -> Result:
+        debugString = f"Gathering Application JMX Configuration Settings for Application:{applicationID}"
+        logging.debug(f"{self.host} - {debugString}")
+        response = await self.controller.getJMXConfig(applicationID)
+        return await self.getResultFromResponse(response, debugString)
+
     async def getCustomMetrics(self, applicationID: int, tierName: str) -> Result:
         debugString = f"Gathering Custom Metrics for Application:{applicationID}"
         logging.debug(f"{self.host} - {debugString}")
@@ -412,7 +434,36 @@ class AppDService:
         debugString = f"Gathering Policies for Application:{applicationID}"
         logging.debug(f"{self.host} - {debugString}")
         response = await self.controller.getPolicies(applicationID)
-        return await self.getResultFromResponse(response, debugString)
+        policies = await self.getResultFromResponse(response, debugString)
+
+        policyDetails = []
+        for policy in policies.data:
+            policyDetails.append(self.controller.getPolicy(applicationID, policy["id"]))
+
+        responses = await AsyncioUtils.gatherWithConcurrency(*policyDetails)
+
+        policyData = []
+        for response, policy in zip(responses, policies.data):
+            debugString = f"Gathering Policy Data for Application:{applicationID} HPolicy:'{policy['name']}'"
+            policyData.append(await self.getResultFromResponse(response, debugString))
+
+        return Result(policyData, None)
+
+    async def getAnomalies(self, applicationID: int) -> Result:
+        debugString = f"Gathering Anomalies for Application:{applicationID}"
+        # logging.debug(f"{self.host} - {debugString}")
+        response = await self.controller.getAnomalies(applicationID)
+        anomalies = await self.getResultFromResponse(response, debugString)
+
+        logging.debug(f"{self.host} - anomalies - {anomalies}")
+        # Result(data={'id': 0, 'version': 0, 'applicationId': 5945, 'name': 'DefaultMLApplicationConfig', 'enabled': False}, error=None)
+        logging.debug(f"{self.host} - applicationID - {applicationID}")
+        # 5709
+        #logging.debug(f"{self.host} - anomalies.enabled - {anomalies.data['enabled']}")
+        logging.debug(f"{self.host} - anomalies.enabled - {anomalies}")
+        # False
+
+        return anomalies;
 
     async def getSnapshotsWithDataCollector(
         self,
@@ -525,6 +576,18 @@ class AppDService:
         response = await self.controller.getAnalyticsEnabledStatusForAllApplications()
         return await self.getResultFromResponse(response, debugString)
 
+    async def getAnalyticsSearches(self) -> Result:
+        debugString = f"Gathering Analytics searches"
+        logging.debug(f"{self.host} - {debugString}")
+        response = await self.controller.getAnalyticsSearches()
+        return await self.getResultFromResponse(response, debugString)
+
+    async def getAnalyticsQueryReports(self) -> Result:
+        debugString = f"Gathering Analytics Metrics"
+        logging.debug(f"{self.host} - {debugString}")
+        response = await self.controller.getAnalyticsQueryReports()
+        return await self.getResultFromResponse(response, debugString)
+
     async def getDashboards(self) -> Result:
         debugString = f"Gathering Dashboards"
         logging.debug(f"{self.host} - {debugString}")
@@ -563,9 +626,16 @@ class AppDService:
                 dashboardSchema["createdBy"] = dashboardOverview["createdBy"]
                 dashboardSchema["createdOn"] = dashboardOverview["createdOn"]
                 dashboardSchema["modifiedOn"] = dashboardOverview["modifiedOn"]
+                dashboardSchema["dashboardId"] = dashboardOverview["id"]
                 returnedDashboards.append(dashboardSchema)
 
         return Result(returnedDashboards, None)
+
+    async def getReports(self) -> Result:
+        debugString = f"Gathering Reports"
+        logging.debug(f"{self.host} - {debugString}")
+        response = await self.controller.getAllReportsMetadata()
+        return await self.getResultFromResponse(response, debugString)
 
     async def getUserPermissions(self, username: str) -> Result:
         debugString = f"Gathering Permission set for user: {username}"
@@ -779,22 +849,25 @@ class AppDService:
         machineIdMap = {}
         for serverResult, serverAvailabilityResult in zip(serversResults, serversAvailabilityResults):
             machine = serverResult.data
-            value = get_recursively(serverAvailabilityResult.data["data"], "value")
-            if value:
-                availability = next(iter(value))
-                machine["availability"] = availability
-            else:
-                machine["availability"] = 0
+            try:
+                value = get_recursively(serverAvailabilityResult.data["data"], "value")
+                if value:
+                    availability = next(iter(value))
+                    machine["availability"] = availability
+                else:
+                    machine["availability"] = 0
 
-            physicalCores = 0
-            virtualCores = 0
-            for cpu in machine.get("cpus", []):
-                physicalCores += cpu.get("coreCount", 0)
-                virtualCores += cpu.get("logicalCount", 0)
-            machine["physicalCores"] = physicalCores
-            machine["virtualCores"] = virtualCores
+                physicalCores = 0
+                virtualCores = 0
+                for cpu in machine.get("cpus", []):
+                    physicalCores += cpu.get("coreCount", 0)
+                    virtualCores += cpu.get("logicalCount", 0)
+                machine["physicalCores"] = physicalCores
+                machine["virtualCores"] = virtualCores
 
-            machineIdMap[machine["hostId"]] = machine
+                machineIdMap[machine["hostId"]] = machine
+            except (KeyError, TypeError, IndexError):
+                print("Couldn't find a match for the key:")
 
         return Result(machineIdMap, None)
 
@@ -859,6 +932,12 @@ class AppDService:
         debugString = f"Gathering AJAX Config for Application {applicationId}"
         logging.debug(f"{self.host} - {debugString}")
         response = await self.controller.getAJAXConfig(applicationId)
+        return await self.getResultFromResponse(response, debugString)
+
+    async def getSettingsConfig(self, applicationId: int) -> Result:
+        debugString = f"Gathering Settings Config for Application {applicationId}"
+        logging.debug(f"{self.host} - {debugString}")
+        response = await self.controller.getSettingsConfig(applicationId)
         return await self.getResultFromResponse(response, debugString)
 
     async def getVirtualPagesConfig(self, applicationId: int) -> Result:

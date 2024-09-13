@@ -29,6 +29,7 @@ class DashboardsAPM(JobStepBase):
                 application = hostInfo[self.componentType][applicationName]
                 application["apmDashboards"] = []
                 application["biqDashboards"] = []
+                application["apmReports"] = []
 
                 for dashboard in hostInfo["exportedDashboards"]:
                     if application["name"] in dashboard["applicationNames"]:
@@ -38,6 +39,10 @@ class DashboardsAPM(JobStepBase):
 
                     if any(application["name"] in item for item in dashboard["adqlQueries"]):
                         application["biqDashboards"].append(dashboard)
+
+                for report in hostInfo["exportedReports"]:
+                    if report["reportDataIds"] is not None:
+                        application["apmReports"].append(report)
 
     def analyze(self, controllerData, thresholds):
         """
@@ -67,6 +72,7 @@ class DashboardsAPM(JobStepBase):
 
                 # numberOfDashboards
                 analysisDataEvaluatedMetrics["numberOfDashboards"] = len(application["apmDashboards"]) + len(application["biqDashboards"])
+                analysisDataRawMetrics["numberOfDashboards"] = len(application["apmDashboards"]) + len(application["biqDashboards"])
 
                 # percentageOfDashboardsModifiedLast6Months
                 numDashboardsModifiedLast6Months = 0
@@ -89,5 +95,18 @@ class DashboardsAPM(JobStepBase):
 
                 # numberOfDashboardsUsingBiQ
                 analysisDataEvaluatedMetrics["numberOfDashboardsUsingBiQ"] = len(application["biqDashboards"])
+                analysisDataRawMetrics["apmReports"] = len(application["apmReports"])
+
+                # Number of reports with using this dashboard.
+                dashboardReport = 0
+                for dashboard in application["apmDashboards"]:
+                    if str(application["name"]) in dashboard["applicationNames"]:
+                        for apmReport in application["apmReports"]:
+                            if apmReport["reportDataIds"] is not None:
+                                for reportDataId in apmReport["reportDataIds"]:
+                                    if reportDataId == dashboard["dashboardId"]:
+                                        dashboardReport = + 1
+
+                analysisDataRawMetrics["dashboardReports"] = dashboardReport
 
                 self.applyThresholds(analysisDataEvaluatedMetrics, analysisDataRoot, jobStepThresholds)

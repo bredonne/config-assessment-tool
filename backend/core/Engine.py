@@ -23,11 +23,16 @@ from extractionSteps.maturityAssessment.apm.ErrorConfigurationAPM import ErrorCo
 from extractionSteps.maturityAssessment.apm.HealthRulesAndAlertingAPM import HealthRulesAndAlertingAPM
 from extractionSteps.maturityAssessment.apm.MachineAgentsAPM import MachineAgentsAPM
 from extractionSteps.maturityAssessment.apm.OverallAssessmentAPM import OverallAssessmentAPM
+from extractionSteps.maturityAssessment.apm.OverallAssessmentAPM_WF import OverallAssessmentAPM_WF
 from extractionSteps.maturityAssessment.apm.OverheadAPM import OverheadAPM
 from extractionSteps.maturityAssessment.apm.ServiceEndpointsAPM import ServiceEndpointsAPM
+from extractionSteps.maturityAssessment.apm.JMXAPM import JMXAPM
 from extractionSteps.maturityAssessment.brum.HealthRulesAndAlertingBRUM import HealthRulesAndAlertingBRUM
+from extractionSteps.maturityAssessment.apm.AnomalyDetectionAPM import AnomalyDetectionAPM
 from extractionSteps.maturityAssessment.brum.NetworkRequestsBRUM import NetworkRequestsBRUM
+from extractionSteps.maturityAssessment.brum.DashboardsBRUM import DashboardsBRUM
 from extractionSteps.maturityAssessment.brum.OverallAssessmentBRUM import OverallAssessmentBRUM
+from extractionSteps.maturityAssessment.brum.OverallAssessmentBRUM_WF import OverallAssessmentBRUM_WF
 from extractionSteps.maturityAssessment.mrum.HealthRulesAndAlertingMRUM import HealthRulesAndAlertingMRUM
 from extractionSteps.maturityAssessment.mrum.NetworkRequestsMRUM import NetworkRequestsMRUM
 from extractionSteps.maturityAssessment.mrum.OverallAssessmentMRUM import OverallAssessmentMRUM
@@ -170,21 +175,26 @@ class Engine:
             MachineAgentsAPM(),
             BusinessTransactionsAPM(),
             BackendsAPM(),
+            JMXAPM(),
             OverheadAPM(),
             ServiceEndpointsAPM(),
             ErrorConfigurationAPM(),
             HealthRulesAndAlertingAPM(),
+            AnomalyDetectionAPM(),
             DataCollectorsAPM(),
             DashboardsAPM(),
             OverallAssessmentAPM(),
+            OverallAssessmentAPM_WF(),
             # BRUM Report
             NetworkRequestsBRUM(),
             HealthRulesAndAlertingBRUM(),
+            DashboardsBRUM(),
             OverallAssessmentBRUM(),
             # MRUM Report
             NetworkRequestsMRUM(),
             HealthRulesAndAlertingMRUM(),
             OverallAssessmentMRUM(),
+            OverallAssessmentBRUM_WF(),
         ]
         self.reports = [
             MaturityAssessmentReport(),

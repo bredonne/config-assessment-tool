@@ -28,6 +28,7 @@ class NetworkRequestsBRUM(JobStepBase):
             getAJAXConfigFutures = []
             getVirtualPagesConfigFutures = []
             getBrowserSnapshotsWithServerSnapshotsFutures = []
+            getSettingsConfigFutures = []
             for application in hostInfo[self.componentType].values():
                 getEumPageListViewDataFutures.append(controller.getEumPageListViewData(application["id"]))
                 getEumNetworkRequestListFutures.append(controller.getEumNetworkRequestList(application["id"]))
@@ -35,6 +36,7 @@ class NetworkRequestsBRUM(JobStepBase):
                 getAJAXConfigFutures.append(controller.getAJAXConfig(application["id"]))
                 getVirtualPagesConfigFutures.append(controller.getVirtualPagesConfig(application["id"]))
                 getBrowserSnapshotsWithServerSnapshotsFutures.append(controller.getBrowserSnapshotsWithServerSnapshots(application["id"]))
+                getSettingsConfigFutures.append(controller.getSettingsConfig(application["id"]))
 
             eumPageListViewData = await AsyncioUtils.gatherWithConcurrency(*getEumPageListViewDataFutures)
             eumNetworkRequestList = await AsyncioUtils.gatherWithConcurrency(*getEumNetworkRequestListFutures)
@@ -42,6 +44,7 @@ class NetworkRequestsBRUM(JobStepBase):
             ajaxConfig = await AsyncioUtils.gatherWithConcurrency(*getAJAXConfigFutures)
             virtualPagesConfig = await AsyncioUtils.gatherWithConcurrency(*getVirtualPagesConfigFutures)
             browserSnapshotsWithServerSnapshots = await AsyncioUtils.gatherWithConcurrency(*getBrowserSnapshotsWithServerSnapshotsFutures)
+            settingsConfig = await AsyncioUtils.gatherWithConcurrency(*getSettingsConfigFutures)
 
             for idx, application in enumerate(hostInfo[self.componentType]):
                 hostInfo[self.componentType][application]["eumPageListViewData"] = eumPageListViewData[idx].data
@@ -50,6 +53,7 @@ class NetworkRequestsBRUM(JobStepBase):
                 hostInfo[self.componentType][application]["ajaxConfig"] = ajaxConfig[idx].data
                 hostInfo[self.componentType][application]["virtualPagesConfig"] = virtualPagesConfig[idx].data
                 hostInfo[self.componentType][application]["browserSnapshotsWithServerSnapshots"] = browserSnapshotsWithServerSnapshots[idx].data
+                hostInfo[self.componentType][application]["settingsConfig"] = settingsConfig[idx].data
 
     def analyze(self, controllerData, thresholds):
         """
@@ -107,8 +111,42 @@ class NetworkRequestsBRUM(JobStepBase):
                 numberOfCustomPageExcludeRules = len(application["pagesAndFramesConfig"]["customNamingExcludeRules"])
                 numberOfCustomAJAXIncludeRules = len(application["ajaxConfig"]["customNamingIncludeRules"])
                 numberOfCustomAJAXExcludeRules = len(application["ajaxConfig"]["customNamingExcludeRules"])
+                numberOfCustomAJAXEventIncludeRules = len(application["ajaxConfig"]["eventServiceIncludeRules"])
+                numberOfCustomAJAXEventExcludeRules = len(application["ajaxConfig"]["eventServiceExcludeRules"])
                 numberOfCustomVirtualIncludeRules = len(application["virtualPagesConfig"]["customNamingIncludeRules"])
                 numberOfCustomVirtualExcludeRules = len(application["virtualPagesConfig"]["customNamingExcludeRules"])
+                numberOfCustomURLIncludeRules = 0
+                numberOfCustomURLExcludeRules = 0
+
+                nonDefaultIncludeRule = 0
+                nonDefaultExcludeRule = 0
+                try:
+                    for rule in application["pagesAndFramesConfig"]["customNamingIncludeRules"]:
+                        if not rule["isDefault"]:
+                            nonDefaultIncludeRule += 1
+                            if rule["matchOnURL"] is not None:
+                                numberOfCustomURLIncludeRules += 1
+                    for rule in application["pagesAndFramesConfig"]["customNamingExcludeRules"]:
+                        if rule["matchOnURL"] is not None:
+                            numberOfCustomURLExcludeRules += 1
+                    for rule in application["ajaxConfig"]["customNamingIncludeRules"]:
+                        if not rule["isDefault"]:
+                            nonDefaultIncludeRule += 1
+                            if rule["matchOnURL"] is not None:
+                                numberOfCustomURLIncludeRules += 1
+                    for rule in application["ajaxConfig"]["customNamingExcludeRules"]:
+                        if rule["matchOnURL"] is not None:
+                            numberOfCustomURLExcludeRules += 1
+                    for rule in application["virtualPagesConfig"]["customNamingIncludeRules"]:
+                        if not rule["isDefault"]:
+                            nonDefaultIncludeRule += 1
+                            if rule["matchOnURL"] is not None:
+                                numberOfCustomURLIncludeRules += 1
+                    for rule in application["virtualPagesConfig"]["customNamingExcludeRules"]:
+                        if rule["matchOnURL"] is not None:
+                            numberOfCustomURLExcludeRules += 1
+                except (KeyError, TypeError, IndexError):
+                    print("Couldn't find a match for the key in application")
 
                 analysisDataEvaluatedMetrics["numberCustomMatchRules"] = (
                     numberOfCustomPageIncludeRules
@@ -122,8 +160,14 @@ class NetworkRequestsBRUM(JobStepBase):
                 analysisDataRawMetrics["numberOfCustomPageExcludeRules"] = numberOfCustomPageExcludeRules
                 analysisDataRawMetrics["numberOfCustomAJAXIncludeRules"] = numberOfCustomAJAXIncludeRules
                 analysisDataRawMetrics["numberOfCustomAJAXExcludeRules"] = numberOfCustomAJAXExcludeRules
+                analysisDataRawMetrics["numberOfCustomAJAXEventIncludeRules"] = numberOfCustomAJAXEventIncludeRules
+                analysisDataRawMetrics["numberOfCustomAJAXEventExcludeRules"] = numberOfCustomAJAXEventExcludeRules
                 analysisDataRawMetrics["numberOfCustomVirtualIncludeRules"] = numberOfCustomVirtualIncludeRules
                 analysisDataRawMetrics["numberOfCustomVirtualExcludeRules"] = numberOfCustomVirtualExcludeRules
+                analysisDataRawMetrics["numberOfCustomURLIncludeRules"] = numberOfCustomURLIncludeRules
+                analysisDataRawMetrics["numberOfCustomURLExcludeRules"] = numberOfCustomURLExcludeRules
+                analysisDataRawMetrics["nonDefaultIncludeRule"] = nonDefaultIncludeRule
+                analysisDataRawMetrics["nonDefaultExcludeRule"] = nonDefaultExcludeRule
 
                 numBrowserSnapshotsWithServerSnapshots = 0
                 if application["browserSnapshotsWithServerSnapshots"].get("snapshots"):
@@ -133,5 +177,6 @@ class NetworkRequestsBRUM(JobStepBase):
 
                 analysisDataEvaluatedMetrics["hasCustomEventServiceIncludeRule"] = len(application["ajaxConfig"]["eventServiceIncludeRules"]) > 0
                 analysisDataRawMetrics["numberOfCustomEventServiceIncludeRules"] = len(application["ajaxConfig"]["eventServiceIncludeRules"])
+                analysisDataRawMetrics["numberOfCustomEventServiceExcludeRules"] = len(application["ajaxConfig"]["eventServiceExcludeRules"])
 
                 self.applyThresholds(analysisDataEvaluatedMetrics, analysisDataRoot, jobStepThresholds)

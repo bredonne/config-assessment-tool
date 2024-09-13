@@ -1,6 +1,7 @@
 import logging
 
 from openpyxl import Workbook
+import pandas as pd
 from output.ReportBase import ReportBase
 from util.excel_utils import addFilterAndFreeze, resizeColumnWidth, writeColoredRow, writeSummarySheet, writeUncoloredRow
 
@@ -61,3 +62,8 @@ class MaturityAssessmentReport(ReportBase):
 
             logging.debug(f"Saving MaturityAssessment-{reportType} Workbook")
             workbook.save(f"output/{jobFileName}/{jobFileName}-MaturityAssessment-{reportType}.xlsx")
+            # Convert WF specific sheets to csv.
+            data = pd.read_excel(f"output/{jobFileName}/{jobFileName}-MaturityAssessment-{reportType}.xlsx", sheet_name=None)
+            for sheet_name, df in data.items():
+                if "_WF" in str(sheet_name):
+                    df.to_csv(f"output/{jobFileName}/{jobFileName}-MaturityAssessment-{reportType}-scorecard.csv")
